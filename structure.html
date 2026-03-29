@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structure & Levels — ChartIQ Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body><nav id="nav">
+  <a href="index.html" class="nav-logo">
+    <span class="nlm">Chart<span>IQ</span></span>
+    <span class="nls">Learn</span>
+  </a>
+  <div class="nav-mid">
+    <a href="index.html" class="nl">Home</a>
+    <div class="nav-dd-wrap" id="navIndicators">
+      <a href="indicators.html" class="nl  has-dd">Indicators <span class="nl-arr">▾</span></a>
+      <div class="mega-dropdown" id="megaDropdown">
+        <div class="mega-inner">
+          <div class="mega-intro">
+            <p class="mega-intro-title">All indicators</p>
+            <p class="mega-intro-sub">6 categories covering every major tool used in technical analysis.</p>
+            <a href="indicators.html" class="mega-all-link">View all →</a>
+          </div>
+          <div class="mega-cats">
+            <a href="trend.html" class="mega-cat "><span class="mc-icon">📈</span><div><strong>Trend &amp; Moving Averages</strong><span>SMA, EMA, Heikin Ashi, Gann</span></div></a>
+            <a href="momentum.html" class="mega-cat "><span class="mc-icon">⚡</span><div><strong>Momentum &amp; Oscillators</strong><span>RSI, MACD, Stochastic, Divergence</span></div></a>
+            <a href="volatility.html" class="mega-cat "><span class="mc-icon">🕯️</span><div><strong>Volatility &amp; Patterns</strong><span>Bollinger, Elliott Wave, Renko, Harmonic</span></div></a>
+            <a href="structure.html" class="mega-cat act"><span class="mc-icon">🏗️</span><div><strong>Structure &amp; Levels</strong><span>S&amp;R, Supply/Demand, BOS, CHoCH</span></div></a>
+            <a href="priceaction.html" class="mega-cat "><span class="mc-icon">🎯</span><div><strong>Price Action &amp; Advanced</strong><span>Fibonacci, FVG, Breakout, Reversal</span></div></a>
+            <a href="volume.html" class="mega-cat "><span class="mc-icon">📊</span><div><strong>Volume &amp; Other Tools</strong><span>Volume, Moon Phases, Seasonality</span></div></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-r">
+    <div class="tt">
+      <button class="tb on" id="btnDark" onclick="setTheme('dark')" title="Dark">🌙</button>
+      <button class="tb" id="btnLight" onclick="setTheme('light')" title="Light">☀️</button>
+    </div>
+    <a href="index.html" class="nc">← Home</a>
+  </div>
+</nav>
+<div class="page-hero">
+  <div class="cat-accent" style="background:#b06ef5"></div>
+  <div class="page-hero-inner">
+    <a href="indicators.html" class="ph-back">← All indicators</a>
+    <span class="ptag" style="background:rgba(176,110,245,0.08);border-color:#b06ef530;color:#b06ef5">Category 4 · 5 indicators</span>
+    <h1>🏗️ Structure & Levels</h1>
+    <p>Identify key price zones where buyers and sellers historically clash. This is the most important concept in all of technical analysis — everything else is built on top of these.</p>
+  </div>
+</div>
+
+<div class="ind-grid" style="max-width:1172px;margin:0 auto">
+  <div class="ind-card reveal" onclick="openModal('sr')">
+    <div class="ind-card-bar" style="background:#b06ef5"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(176,110,245,.14);color:#b06ef5">Structure</span>
+        <span class="ind-diff">★☆☆ Easy</span>
+      </div>
+      <h3>Support & Resistance</h3>
+      <p class="ind-card-full">// Horizontal Price Zones</p>
+      <p class="ind-card-desc">Horizontal price zones where buying interest (support) or selling pressure (resistance) historically overcomes the opposite force.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Support & Resistance</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('sd')">
+    <div class="ind-card-bar" style="background:#b06ef5"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(176,110,245,.14);color:#b06ef5">Structure</span>
+        <span class="ind-diff">★★★ Intermediate</span>
+      </div>
+      <h3>Supply & Demand</h3>
+      <p class="ind-card-full">// Institutional Order Flow Zones</p>
+      <p class="ind-card-desc">Origin areas of strong institutional moves — zones where large buy or sell orders were placed and may be placed again.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Supply & Demand</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('ms')">
+    <div class="ind-card-bar" style="background:#b06ef5"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(176,110,245,.14);color:#b06ef5">Structure</span>
+        <span class="ind-diff">★☆☆ Easy</span>
+      </div>
+      <h3>Market Structure</h3>
+      <p class="ind-card-full">// Higher Highs, Higher Lows Framework</p>
+      <p class="ind-card-desc">The pattern of swing highs and lows that determines whether a market is in an uptrend, downtrend, or range.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Market Structure</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('bos')">
+    <div class="ind-card-bar" style="background:#b06ef5"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(176,110,245,.14);color:#b06ef5">Structure</span>
+        <span class="ind-diff">★★☆ Intermediate</span>
+      </div>
+      <h3>BOS</h3>
+      <p class="ind-card-full">// Break of Structure</p>
+      <p class="ind-card-desc">Occurs when price breaks past a significant swing high (uptrend) or swing low (downtrend), confirming trend continuation.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn BOS</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('choch')">
+    <div class="ind-card-bar" style="background:#b06ef5"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(176,110,245,.14);color:#b06ef5">Structure</span>
+        <span class="ind-diff">★★☆ Intermediate</span>
+      </div>
+      <h3>CHoCH</h3>
+      <p class="ind-card-full">// Change of Character</p>
+      <p class="ind-card-desc">The first sign that an existing trend may be reversing — price breaks the most recent swing low (uptrend) or swing high (downtrend).</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn CHoCH</span><span class="ind-cta-arr">→</span></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="handleOvClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-bar" id="mHeadBar"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <span class="m-tag" id="mTag"></span>
+      <h2 id="mTitle"></h2>
+      <p class="m-full" id="mFull"></p>
+      <p class="m-intro" id="mIntro"></p>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <span class="fb">ChartIQ Learn</span>
+  <span class="fn">⚠ Educational only — not financial advice</span>
+  <span class="fc">© 2025</span>
+</footer>
+
+<script>
+window.INDICATORS = {
+  'sr': {"title": "Support & Resistance", "full": "// Horizontal Price Zones", "tag": "Structure · Easy", "tagBg": "rgba(176,110,245,.14)", "tagColor": "#b06ef5", "accentColor": "#b06ef5", "_chartType": "default", "intro": "Support and resistance are the most fundamental concepts in technical analysis. Support is where buying overcomes selling. Resistance is where selling overcomes buying. Every other tool builds on top of these.", "how": "These levels form because human psychology is consistent — traders remember past prices. When price reaches a level where it reversed before, many traders expect it to reverse again.\n\nThe more times a level has been tested and held, the more significant it is. When price finally breaks through, that level often flips to the opposite role — this \"role reversal\" is one of the most reliable patterns in trading.", "formula": "Support: zone where price has bounced up multiple times\nResistance: zone where price has been rejected multiple times\nStrength: more tests + longer time ago = stronger level\nRole reversal: broken support becomes resistance (and vice versa)", "signals": [{"t": "buy", "l": "Support bounce", "d": "Price falls to known support and shows signs of holding (reversal candle, RSI oversold, volume spike). Enter long, stop below support."}, {"t": "sell", "l": "Resistance rejection", "d": "Price rallies to known resistance and fails to break through. Take profit or enter short with stop above resistance."}, {"t": "trend", "l": "Level breakout", "d": "Price breaks through support or resistance with strong volume. The broken level often becomes the opposite — enter on the retest."}], "tips": ["Round numbers ($50,000, $100) act as psychological S&R — they attract significant buying and selling from retail traders.", "The more times a level has been tested, the more likely it eventually breaks — repeated testing weakens S&R zones.", "Always look for confluences — Fibonacci + horizontal S&R + EMA at the same level creates a high-probability zone."]},
+  'sd': {"title": "Supply & Demand", "full": "// Institutional Order Flow Zones", "tag": "Structure · Intermediate", "tagBg": "rgba(176,110,245,.14)", "tagColor": "#b06ef5", "accentColor": "#b06ef5", "_chartType": "default", "intro": "Supply and demand zones go beyond traditional S&R by focusing on the origin of impulsive price moves — the zones where large institutional orders were placed, causing price to explode away.", "how": "A Demand Zone forms when price consolidates then suddenly shoots up strongly. This is where big buyers accumulated. When price returns, those buyers may add more — creating support.\n\nA Supply Zone forms when price consolidates then drops sharply. Sellers haven't fully exited — when price returns, they sell again. The key difference from S&R: zones are defined by the origin of the explosive move, not just where price bounced.", "formula": "Demand Zone: consolidation base before a sharp rally\nSupply Zone: consolidation top before a sharp selloff\nValid zone: price left quickly (gap-like move)\nStrength: larger/faster move away = stronger zone", "signals": [{"t": "buy", "l": "Price enters demand", "d": "Price returns to an untested demand zone. Enter long near the bottom of the zone with stop below the zone."}, {"t": "sell", "l": "Price enters supply", "d": "Price returns to an untested supply zone. Enter short near the top of the zone with stop above the zone."}, {"t": "trend", "l": "Zone freshness", "d": "Fresh zones (untested) are strongest. Once a zone has been tested multiple times, it weakens and may break on next visit."}], "tips": ["The best zones are where price left very quickly — a gap-like candle away from the zone shows strong institutional imbalance.", "A zone is only valid until it's been tested. Once price returns and bounces, the zone weakens significantly.", "Combine supply/demand zones with BOS and CHoCH for a complete institutional (Smart Money) trading framework."]},
+  'ms': {"title": "Market Structure", "full": "// Higher Highs, Higher Lows Framework", "tag": "Structure · Easy", "tagBg": "rgba(176,110,245,.14)", "tagColor": "#b06ef5", "accentColor": "#b06ef5", "_chartType": "default", "intro": "Market structure is the foundation of all trading — it describes the pattern of swing highs and lows to determine whether a market is in an uptrend, downtrend, or range.", "how": "An uptrend (bullish structure) shows Higher Highs (HH) and Higher Lows (HL). Each rally exceeds the last, each pullback stays above the previous pullback.\n\nA downtrend (bearish structure) shows Lower Lows (LL) and Lower Highs (LH). Understanding the current structure tells you which direction you should be trading. This should be the very first thing you analyse before any indicator.", "formula": "Uptrend: HH + HL sequence = buy dips\nDowntrend: LL + LH sequence = sell rallies\nRange: equal highs + equal lows = no clear direction\nStructure break: BOS or CHoCH signals a shift", "signals": [{"t": "buy", "l": "Bullish structure", "d": "Series of HH and HL confirmed. Trade with the trend — buy pullbacks to prior HLs. Never fight the structure."}, {"t": "sell", "l": "Bearish structure", "d": "Series of LL and LH confirmed. Sell rallies to prior LHs. Shorting is the higher-probability direction."}, {"t": "trend", "l": "Range-bound", "d": "Equal highs and lows — no clear structure. Avoid trend-following strategies. Range trading between the boundaries is more appropriate."}], "tips": ["Market structure is fractal — the same patterns exist on every timeframe. A 15-min uptrend can exist inside a 4H downtrend.", "Always trade in the direction of the higher timeframe structure. If the daily is bearish, be very cautious on 1H longs.", "Structure analysis should be the very first step before any other indicator — it sets the context for every single trade."]},
+  'bos': {"title": "BOS", "full": "// Break of Structure", "tag": "Structure · Intermediate", "tagBg": "rgba(176,110,245,.14)", "tagColor": "#b06ef5", "accentColor": "#b06ef5", "_chartType": "default", "intro": "A Break of Structure (BOS) occurs when price breaks past a significant swing high in an uptrend or swing low in a downtrend — confirming the existing trend is continuing, not reversing.", "how": "In an uptrend: each time price breaks above the previous swing high = BOS to the upside. This confirms buyers are still in control and the trend is healthy.\n\nIn a downtrend: each break below a previous swing low = BOS to the downside. Sellers remain dominant. BOS is crucial to distinguish from CHoCH — BOS confirms the trend is continuing, while CHoCH signals it may be reversing.", "formula": "Bullish BOS: candle closes above previous swing high\nBearish BOS: candle closes below previous swing low\nConfirmation: must be a candle close (wicks don't count)\nContext: only meaningful in an established trending market", "signals": [{"t": "buy", "l": "Bullish BOS", "d": "Price closes above previous swing high in uptrend. Confirms continuation — the pullback after the BOS is your entry."}, {"t": "sell", "l": "Bearish BOS", "d": "Price closes below previous swing low in downtrend. Confirms continuation — the rally after the BOS is a sell."}, {"t": "trend", "l": "BOS target", "d": "The next swing high (bullish) or swing low (bearish) becomes the natural price target after a BOS."}], "tips": ["Always use candle closes to confirm BOS — wicks that break a level then close back inside don't count as valid BOS.", "BOS combined with a pullback into a demand/supply zone creates one of the highest-probability entry setups available.", "Multiple BOS in the same direction on the same timeframe = very strong trend momentum — consider larger position size."]},
+  'choch': {"title": "CHoCH", "full": "// Change of Character", "tag": "Structure · Intermediate", "tagBg": "rgba(176,110,245,.14)", "tagColor": "#b06ef5", "accentColor": "#b06ef5", "_chartType": "default", "intro": "A Change of Character (CHoCH) is the first warning sign that an existing trend may be reversing. It occurs when price breaks the most recent Higher Low in an uptrend, or Lower High in a downtrend.", "how": "In an uptrend making HH and HL: a CHoCH occurs when price breaks below the most recent Higher Low. This is the first time a key level has been violated — a warning sign.\n\nCHoCH alone doesn't confirm a reversal — it's an alert. A BOS in the opposite direction following the CHoCH confirms the trend has actually changed. Many traders wait for both signals before switching direction entirely.", "formula": "Bearish CHoCH: in uptrend, breaks below most recent HL\nBullish CHoCH: in downtrend, breaks above most recent LH\nResult: first warning of potential trend reversal\nConfirmation: subsequent BOS in the new direction", "signals": [{"t": "buy", "l": "Bullish CHoCH", "d": "In a downtrend, price breaks above the most recent Lower High. First sign of potential reversal up — start looking for long opportunities."}, {"t": "sell", "l": "Bearish CHoCH", "d": "In an uptrend, price breaks below the most recent Higher Low. First sign of potential reversal down — tighten stops on longs."}, {"t": "trend", "l": "CHoCH + BOS combo", "d": "CHoCH (first warning) followed by BOS in the new direction (confirmation) = high-probability trend reversal setup. Wait for both."}], "tips": ["CHoCH is a warning, not a confirmed reversal. Many CHoCH formations fail and price resumes the original trend.", "The best CHoCH setups occur after a prolonged trend — the longer the trend, the more significant the CHoCH.", "Use CHoCH to start reducing position size or moving stops to break-even, not to immediately reverse your direction."]}
+};
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
