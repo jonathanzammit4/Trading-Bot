@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indicators — ChartIQ Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+[data-theme="dark"]{
+  --bg:#0a0c10;--bg2:#0f1318;--bg3:#161c24;--bg4:#1c242f;--surface:#1e2630;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.22);
+  --text:#e4e9f0;--text2:#8a97a8;--text3:#505e6e;
+  --accent:#00d4aa;--accent-bg:rgba(0,212,170,0.08);--accent-bd:rgba(0,212,170,0.22);
+  --gold:#c9a84c;--red:#e05252;
+  --shadow:0 24px 60px rgba(0,0,0,0.55);--shadow-sm:0 4px 16px rgba(0,0,0,0.3);
+}
+[data-theme="light"]{
+  --bg:#f5f4f0;--bg2:#edecea;--bg3:#e4e2de;--bg4:#dbd9d4;--surface:#ffffff;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.12);--border3:rgba(0,0,0,0.22);
+  --text:#1a1f28;--text2:#5a6470;--text3:#9aa3ae;
+  --accent:#008a6e;--accent-bg:rgba(0,138,110,0.07);--accent-bd:rgba(0,138,110,0.2);
+  --gold:#8a6b1e;--red:#c03030;
+  --shadow:0 24px 60px rgba(0,0,0,0.12);--shadow-sm:0 4px 16px rgba(0,0,0,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;overflow-x:hidden;transition:background .35s,color .35s}
+body.locked{overflow:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:400;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:var(--bg);border-bottom:1px solid var(--border);transition:background .35s,border-color .35s}
+.nlm{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.02em;text-decoration:none}
+.nlm span{color:var(--accent)}
+.nav-logo{display:flex;align-items:baseline;gap:6px;text-decoration:none}
+.nls{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase}
+.nav-mid{display:flex;gap:4px}
+.nl{text-decoration:none;font-size:13px;font-weight:500;color:var(--text2);padding:6px 14px;border-radius:6px;transition:color .2s,background .2s}
+.nl:hover,.nl.act{color:var(--text);background:var(--bg3)}
+.nav-r{display:flex;align-items:center;gap:12px}
+.tt{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:3px;gap:2px}
+.tb{width:28px;height:28px;border-radius:16px;border:none;cursor:pointer;background:transparent;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .25s;color:var(--text2)}
+.tb.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+.nc{text-decoration:none;background:var(--accent);color:#000;font-size:12px;font-weight:700;padding:8px 18px;border-radius:6px;letter-spacing:.02em;transition:opacity .2s,transform .2s}
+.nc:hover{opacity:.85;transform:translateY(-1px)}
+
+/* PAGE HEADER */
+.ph{padding:96px 32px 52px;background:var(--bg2);border-bottom:1px solid var(--border);position:relative;overflow:hidden;transition:background .35s}
+.ph::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.6}
+.phi{max-width:1100px;margin:0 auto;position:relative}
+.ptag{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;background:var(--accent-bg);border:1px solid var(--accent-bd);padding:5px 14px;border-radius:100px;display:inline-block;margin-bottom:22px}
+.ph h1{font-family:'Fraunces',serif;font-size:clamp(36px,5vw,64px);font-weight:700;letter-spacing:-.025em;line-height:1.05;margin-bottom:14px}
+.ph p{font-size:17px;color:var(--text2);max-width:540px;line-height:1.7}
+
+/* CATEGORY GRID */
+.cats{padding:52px 32px 80px}
+.cats-inner{max-width:1100px;margin:0 auto}
+.cats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+/* CATEGORY CARD */
+.cat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;cursor:pointer;
+  transition:border-color .25s,transform .25s,box-shadow .25s;
+  position:relative;
+}
+.cat-card:hover{border-color:var(--border2);transform:translateY(-5px);box-shadow:var(--shadow)}
+.cat-card.open{border-color:var(--border2)}
+.cat-bar{height:3px;width:100%}
+.cat-body{padding:28px}
+.cat-icon{font-size:28px;margin-bottom:14px;display:block}
+.cat-flag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.cat-card h3{font-family:'Fraunces',serif;font-size:22px;font-weight:700;letter-spacing:-.015em;margin-bottom:10px}
+.cat-card p{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+.cat-count{display:flex;align-items:center;justify-content:space-between}
+.cc-badge{font-family:'DM Mono',monospace;font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border2);color:var(--text3)}
+.cc-arrow{font-size:16px;color:var(--text3);transition:transform .3s,color .3s}
+.cat-card:hover .cc-arrow{color:var(--text)}
+.cat-card.open .cc-arrow{transform:rotate(90deg)}
+
+/* EXPANDED PANEL */
+.cat-panel{
+  max-height:0;overflow:hidden;
+  transition:max-height .45s cubic-bezier(0.4,0,0.2,1);
+  border-top:0 solid var(--border);
+}
+.cat-panel.open{max-height:2000px;border-top-width:1px}
+.panel-inner{padding:24px 28px 28px;display:flex;flex-direction:column;gap:12px;background:var(--bg3)}
+
+.sub-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;transition:border-color .2s,background .2s;
+  gap:12px;
+}
+.sub-card:hover{border-color:var(--border2);background:var(--bg3)}
+.sub-left{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.sub-name{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.sub-desc{font-size:12px;color:var(--text3);line-height:1.5;font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-pills{display:flex;gap:6px;flex-shrink:0}
+.sp{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px}
+.sp.buy{background:rgba(0,212,170,.12);color:var(--accent)}
+.sp.sell{background:rgba(224,82,82,.12);color:var(--red)}
+.sp.trend{background:rgba(77,158,247,.12);color:#4d9ef7}
+.sp.vol{background:rgba(201,168,76,.12);color:var(--gold)}
+.sub-arrow{color:var(--text3);font-size:14px;flex-shrink:0;transition:transform .2s}
+.sub-card:hover .sub-arrow{transform:translateX(3px);color:var(--text)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(5,7,10,.88);backdrop-filter:blur(10px);display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:880px;position:relative;overflow:hidden;transform:translateY(16px) scale(.985);transition:transform .3s}
+.overlay.show .modal{transform:translateY(0) scale(1)}
+.mhead{padding:32px 40px 26px;border-bottom:1px solid var(--border);position:relative}
+.m-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border-radius:4px;margin-bottom:12px;display:inline-block}
+.mhead h2{font-family:'Fraunces',serif;font-size:38px;font-weight:700;letter-spacing:-.025em;margin-bottom:4px}
+.m-full{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);margin-bottom:12px}
+.mhead .mint{font-size:15px;color:var(--text2);line-height:1.7;max-width:640px}
+.mclose{position:absolute;top:28px;right:28px;width:34px;height:34px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:'DM Mono',monospace}
+.mclose:hover{border-color:var(--border3);color:var(--text)}
+.mbody{padding:32px 40px;display:flex;flex-direction:column;gap:32px}
+
+.chart-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:22px}
+.chart-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+.chart-wrap canvas{max-height:190px}
+
+.msec h3{font-size:17px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.msec h3::before{content:'';display:block;width:3px;height:17px;border-radius:2px;background:var(--accent);flex-shrink:0}
+.msec p{font-size:14px;color:var(--text2);line-height:1.85;margin-bottom:12px}
+.msec p strong{color:var(--text);font-weight:600}
+.formula{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text);line-height:1.9;margin-top:8px}
+
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sc{border-radius:10px;padding:18px}
+.sc.buy{background:rgba(0,212,170,.05);border:1px solid rgba(0,212,170,.14)}
+.sc.sell{background:rgba(224,82,82,.05);border:1px solid rgba(224,82,82,.14)}
+.sc.hold{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.14)}
+.sc.trend{background:rgba(77,158,247,.05);border:1px solid rgba(77,158,247,.14)}
+.sc-lbl{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;margin-bottom:7px}
+.sc.buy .sc-lbl{color:var(--accent)}.sc.sell .sc-lbl{color:var(--red)}.sc.hold .sc-lbl{color:var(--gold)}.sc.trend .sc-lbl{color:#4d9ef7}
+.sc p{font-size:13px;color:var(--text2);line-height:1.6}
+
+.tips{display:flex;flex-direction:column;gap:10px}
+.tip{display:flex;gap:12px;align-items:flex-start;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:13px 15px;font-size:13px;color:var(--text2);line-height:1.65}
+.tip-ico{flex-shrink:0;font-size:15px}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.reveal.in{opacity:1;transform:translateY(0)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){
+  nav{padding:0 20px}.nav-mid{display:none}
+  .ph,.cats{padding-left:20px;padding-right:20px}
+  .cats-grid{grid-template-columns:1fr}
+  .mhead,.mbody{padding:22px}
+  .sgrid{grid-template-columns:1fr}
+  .mclose{top:18px;right:18px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nlm">Chart<span>IQ</span></span>
+    <span class="nls">Learn</span>
+  </a>
+  <div class="nav-mid">
+    <a href="index.html" class="nl">Home</a>
+    <a href="indicators.html" class="nl act">Indicators</a>
+  </div>
+  <div class="nav-r">
+    <div class="tt">
+      <button class="tb on" id="btnDark" onclick="setTheme('dark')" title="Dark">🌙</button>
+      <button class="tb" id="btnLight" onclick="setTheme('light')" title="Light">☀️</button>
+    </div>
+    <a href="index.html" class="nc">← Home</a>
+  </div>
+</nav>
+
+<div class="ph">
+  <div class="phi">
+    <span class="ptag">Technical analysis</span>
+    <h1>Trading Indicators</h1>
+    <p>Six categories of tools used by real traders. Click any category to explore its indicators — then click an indicator to learn it in depth.</p>
+  </div>
+</div>
+
+<div class="cats">
+  <div class="cats-inner">
+    <div class="cats-grid" id="catsGrid">
+
+      <!-- 1. TREND & MOVING AVERAGES -->
+      <div class="cat-card reveal" style="animation-delay:.04s">
+        <div class="cat-bar" style="background:#00d4aa"></div>
+        <div class="cat-body">
+          <span class="cat-icon">📈</span>
+          <p class="cat-flag" style="color:#00d4aa">Category 1</p>
+          <h3>Trend &amp; Moving Averages</h3>
+          <p>Tools that smooth out price noise to reveal the underlying direction. The foundation of all technical analysis.</p>
+          <div class="cat-count">
+            <span class="cc-badge">6 indicators</span>
+            <span class="cc-arrow">›</span>
+          </div>
+        </div>
+        <div class="cat-panel" id="panel-trend">
+          <div class="panel-inner">
+            <div class="sub-card" onclick="openModal('sma')"><div class="sub-left"><span class="sub-name">SMA — Simple Moving Average</span><span class="sub-desc">Average of closing prices over N periods</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('ema')"><div class="sub-left"><span class="sub-name">EMA — Exponential Moving Average</span><span class="sub-desc">Weighted average — reacts faster to price</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('trendlines')"><div class="sub-left"><span class="sub-name">Trend Lines</span><span class="sub-desc">Diagonal lines connecting price highs or lows</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('dynsr')"><div class="sub-left"><span class="sub-name">Dynamic Support &amp; Resistance</span><span class="sub-desc">Moving levels that shift with price</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('gann')"><div class="sub-left"><span class="sub-name">Gann Angles</span><span class="sub-desc">Price and time relationship lines</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('heikinashi')"><div class="sub-left"><span class="sub-name">Heikin Ashi</span><span class="sub-desc">Modified candles that smooth price action</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MOMENTUM & OSCILLATORS -->
+      <div class="cat-card reveal" style="animation-delay:.1s">
+        <div class="cat-bar" style="background:#4d9ef7"></div>
+        <div class="cat-body">
+          <span class="cat-icon">⚡</span>
+          <p class="cat-flag" style="color:#4d9ef7">Category 2</p>
+          <h3>Momentum &amp; Oscillators</h3>
+          <p>Measure the speed and strength of price movement. Identify overbought/oversold conditions and fading momentum.</p>
+          <div class="cat-count">
+            <span class="cc-badge">4 indicators</span>
+            <span class="cc-arrow">›</span>
+          </div>
+        </div>
+        <div class="cat-panel" id="panel-momentum">
+          <div class="panel-inner">
+            <div class="sub-card" onclick="openModal('rsi')"><div class="sub-left"><span class="sub-name">RSI — Relative Strength Index</span><span class="sub-desc">Momentum oscillator 0–100, overbought/oversold</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('macd')"><div class="sub-left"><span class="sub-name">MACD</span><span class="sub-desc">Two EMAs — trend direction and momentum strength</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('stoch')"><div class="sub-left"><span class="sub-name">Stochastic Oscillator</span><span class="sub-desc">Compares close to price range, 0–100</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('divergence')"><div class="sub-left"><span class="sub-name">Divergence</span><span class="sub-desc">Price vs indicator disagreement = reversal signal</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. VOLATILITY & PATTERNS -->
+      <div class="cat-card reveal" style="animation-delay:.16s">
+        <div class="cat-bar" style="background:#c9a84c"></div>
+        <div class="cat-body">
+          <span class="cat-icon">🕯️</span>
+          <p class="cat-flag" style="color:#c9a84c">Category 3</p>
+          <h3>Volatility &amp; Patterns</h3>
+          <p>Measure how much price is moving and identify repeating price structures that signal potential continuations or reversals.</p>
+          <div class="cat-count">
+            <span class="cc-badge">5 indicators</span>
+            <span class="cc-arrow">›</span>
+          </div>
+        </div>
+        <div class="cat-panel" id="panel-volatility">
+          <div class="panel-inner">
+            <div class="sub-card" onclick="openModal('bb')"><div class="sub-left"><span class="sub-name">Bollinger Bands</span><span class="sub-desc">Volatility bands around a 20-period SMA</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('candlestick')"><div class="sub-left"><span class="sub-name">Candlestick Patterns</span><span class="sub-desc">Doji, hammer, engulfing, shooting star & more</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('renko')"><div class="sub-left"><span class="sub-name">Renko Charts</span><span class="sub-desc">Brick-based charts that filter time and noise</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('harmonic')"><div class="sub-left"><span class="sub-name">Harmonic Patterns</span><span class="sub-desc">Fibonacci-ratio price patterns (Gartley, Bat, Crab)</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('elliott')"><div class="sub-left"><span class="sub-name">Elliott Wave</span><span class="sub-desc">5-wave impulse and 3-wave corrective cycles</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. STRUCTURE & LEVELS -->
+      <div class="cat-card reveal" style="animation-delay:.22s">
+        <div class="cat-bar" style="background:#b06ef5"></div>
+        <div class="cat-body">
+          <span class="cat-icon">🏗️</span>
+          <p class="cat-flag" style="color:#b06ef5">Category 4</p>
+          <h3>Structure &amp; Levels</h3>
+          <p>Identify key price zones where buyers and sellers historically clash — the most important concept in all of technical analysis.</p>
+          <div class="cat-count">
+            <span class="cc-badge">5 indicators</span>
+            <span class="cc-arrow">›</span>
+          </div>
+        </div>
+        <div class="cat-panel" id="panel-structure">
+          <div class="panel-inner">
+            <div class="sub-card" onclick="openModal('sr')"><div class="sub-left"><span class="sub-name">Support &amp; Resistance</span><span class="sub-desc">Horizontal price zones where price repeatedly stalls</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('sd')"><div class="sub-left"><span class="sub-name">Supply &amp; Demand Zones</span><span class="sub-desc">Origin areas of strong institutional moves</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('ms')"><div class="sub-left"><span class="sub-name">Market Structure</span><span class="sub-desc">Higher highs/lows define bull/bear trends</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('bos')"><div class="sub-left"><span class="sub-name">BOS — Break of Structure</span><span class="sub-desc">Price breaks past a key swing high or low</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('choch')"><div class="sub-left"><span class="sub-name">CHoCH — Change of Character</span><span class="sub-desc">First signal that trend is reversing direction</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. PRICE ACTION & ADVANCED -->
+      <div class="cat-card reveal" style="animation-delay:.28s">
+        <div class="cat-bar" style="background:#e05252"></div>
+        <div class="cat-body">
+          <span class="cat-icon">🎯</span>
+          <p class="cat-flag" style="color:#e05252">Category 5</p>
+          <h3>Price Action &amp; Advanced</h3>
+          <p>Pure price-based techniques and advanced concepts used by professional and institutional traders worldwide.</p>
+          <div class="cat-count">
+            <span class="cc-badge">4 indicators</span>
+            <span class="cc-arrow">›</span>
+          </div>
+        </div>
+        <div class="cat-panel" id="panel-priceaction">
+          <div class="panel-inner">
+            <div class="sub-card" onclick="openModal('fib')"><div class="sub-left"><span class="sub-name">Fibonacci Retracement</span><span class="sub-desc">Key levels: 23.6%, 38.2%, 50%, 61.8%, 78.6%</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('fvg')"><div class="sub-left"><span class="sub-name">Fair Value Gap (FVG)</span><span class="sub-desc">Price imbalances left by fast institutional moves</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('breakout')"><div class="sub-left"><span class="sub-name">Breakout Trading</span><span class="sub-desc">Entering when price leaves a range or pattern</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('reversal')"><div class="sub-left"><span class="sub-name">Reversal Patterns</span><span class="sub-desc">Head & shoulders, double tops/bottoms, wedges</span></div><div class="sub-pills"><span class="sp buy">BUY</span><span class="sp sell">SELL</span></div><span class="sub-arrow">›</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. VOLUME & TOOLS -->
+      <div class="cat-card reveal" style="animation-delay:.34s">
+        <div class="cat-bar" style="background:#f97316"></div>
+        <div class="cat-body">
+          <span class="cat-icon">📊</span>
+          <p class="cat-flag" style="color:#f97316">Category 6</p>
+          <h3>Volume &amp; Other Tools</h3>
+          <p>Volume confirms or denies price moves. Plus some unconventional tools that some traders swear by.</p>
+          <div class="cat-count">
+            <span class="cc-badge">3 indicators</span>
+            <span class="cc-arrow">›</span>
+          </div>
+        </div>
+        <div class="cat-panel" id="panel-volume">
+          <div class="panel-inner">
+            <div class="sub-card" onclick="openModal('volume')"><div class="sub-left"><span class="sub-name">Volume Analysis</span><span class="sub-desc">Confirm price moves — high volume = conviction</span></div><div class="sub-pills"><span class="sp vol">VOL</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('moon')"><div class="sub-left"><span class="sub-name">Moon Phases</span><span class="sub-desc">Lunar cycle correlations studied by some traders</span></div><div class="sub-pills"><span class="sp trend">ALT</span></div><span class="sub-arrow">›</span></div>
+            <div class="sub-card" onclick="openModal('season')"><div class="sub-left"><span class="sub-name">Seasonality</span><span class="sub-desc">Historical patterns tied to calendar periods</span></div><div class="sub-pills"><span class="sp trend">TREND</span></div><span class="sub-arrow">›</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="handleOvClick(event)">
+  <div class="modal" id="modal">
+    <div class="mhead" id="mhead">
+      <button class="mclose" onclick="closeModal()">✕</button>
+      <span class="m-tag" id="mTag"></span>
+      <h2 id="mTitle"></h2>
+      <p class="m-full" id="mFull"></p>
+      <p class="mint" id="mIntro"></p>
+    </div>
+    <div class="mbody" id="mbody"></div>
+  </div>
+</div>
+
+<script>
+/* ── THEME ── */
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('btnDark').classList.toggle('on',t==='dark');
+  document.getElementById('btnLight').classList.toggle('on',t==='light');
+  localStorage.setItem('ciq-theme',t);
+}
+(function(){const s=localStorage.getItem('ciq-theme');if(s)setTheme(s);})();
+
+/* ── CATEGORY TOGGLE ── */
+const panelMap = {
+  0:'panel-trend', 1:'panel-momentum', 2:'panel-volatility',
+  3:'panel-structure', 4:'panel-priceaction', 5:'panel-volume'
+};
+document.querySelectorAll('.cat-card').forEach((card,i)=>{
+  card.addEventListener('click', e=>{
+    if(e.target.closest('.sub-card')) return;
+    const panelId = panelMap[i];
+    const panel = document.getElementById(panelId);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.cat-card').forEach(c=>c.classList.remove('open'));
+    document.querySelectorAll('.cat-panel').forEach(p=>p.classList.remove('open'));
+    if(!isOpen){ card.classList.add('open'); panel.classList.add('open'); }
+  });
+});
+
+/* ── INDICATOR DATA ── */
+const DATA = {
+  sma:{title:'SMA',full:'// Simple Moving Average',tag:'Trend Indicator',tagC:'rgba(0,212,170,.12)',tagT:'#00d4aa',
+    intro:'The Simple Moving Average is the most fundamental tool in technical analysis. It smooths price data to reveal the underlying trend by averaging closing prices over a set number of periods.',
+    how:`SMA adds up the last N closing prices and divides by N. Each new candle, the oldest drops off and the newest adds in — creating a smooth line that follows price.\n\nA rising SMA = uptrend. Falling SMA = downtrend. Two SMAs crossing generates the most watched signals in trading: the Golden Cross and Death Cross.`,
+    formula:'SMA(N) = (P₁ + P₂ + ... + Pₙ) / N\nCommon periods: 10, 20, 50, 100, 200\nGolden Cross: SMA(50) crosses above SMA(200)',
+    signals:[
+      {t:'buy',l:'Golden Cross',d:'Fast SMA (50) crosses above slow SMA (200). One of the strongest long-term buy signals in all of trading.'},
+      {t:'sell',l:'Death Cross',d:'Fast SMA crosses below slow SMA. Signals a potential bear market beginning. Classic institutional sell signal.'},
+      {t:'trend',l:'Price vs SMA',d:'Price above a rising SMA = bullish. Price below a falling SMA = bearish. Use the SMA as dynamic support/resistance.'},
+    ],
+    tips:['The 200-day SMA is watched by every major institution worldwide. Price above it = bull territory. Below = bear territory.','SMA lags price — it confirms trends but is slow to signal reversals. It\'s best for confirmation, not prediction.','Price frequently bounces off the SMA in trending markets — the SMA acts as a magnet for price.']
+  },
+  ema:{title:'EMA',full:'// Exponential Moving Average',tag:'Trend Indicator',tagC:'rgba(0,212,170,.12)',tagT:'#00d4aa',
+    intro:'The EMA works like the SMA but gives more weight to recent prices, making it react faster to new price movements. It\'s widely preferred in faster-moving markets like crypto.',
+    how:`EMA applies a multiplier (2 ÷ N+1) so recent prices influence the average more than older ones. A 10-period EMA reacts faster to price changes than a 10-period SMA.\n\nThis responsiveness makes EMA excellent for identifying trend changes early — but it also generates more false signals in choppy, sideways markets.`,
+    formula:'Multiplier k = 2 / (N + 1)\nEMA = Price × k + Previous EMA × (1 − k)\nFor EMA(10): k = 2/11 ≈ 0.1818',
+    signals:[
+      {t:'buy',l:'Price above EMA',d:'Price crosses above a rising EMA — trend turning bullish. Stronger when confirmed by increasing volume.'},
+      {t:'sell',l:'Price below EMA',d:'Price crosses below a falling EMA — trend turning bearish. Consider tightening stop-losses or exiting.'},
+      {t:'trend',l:'EMA slope',d:'A rising EMA slope = uptrend. Flat EMA = sideways. Falling EMA = downtrend. Use slope as quick trend filter.'},
+    ],
+    tips:['The 9 and 21 EMA cross is popular for short-term trading. The 50 and 200 EMA cross is used for long-term signals.','EMA is faster than SMA but generates more false signals in sideways markets. Best used in trending conditions.','Many traders buy the "dip to the EMA" in an established uptrend — the EMA acts as dynamic support.']
+  },
+  trendlines:{title:'Trend Lines',full:'// Diagonal price structure lines',tag:'Trend Indicator',tagC:'rgba(0,212,170,.12)',tagT:'#00d4aa',
+    intro:'Trend lines are straight lines drawn along price highs or lows to visualise the direction and angle of a trend. They are one of the most basic and powerful tools in technical analysis.',
+    how:`An uptrend line connects successive higher lows. A downtrend line connects successive lower highs. The line defines the trend's "floor" or "ceiling".\n\nA valid trend line requires at least two touch points — three or more makes it much more significant. When price breaks through a trend line with volume, it often signals a trend change.`,
+    formula:'Uptrend line: connect higher swing lows\nDowntrend line: connect lower swing highs\nStrength: more touch points = stronger line',
+    signals:[
+      {t:'buy',l:'Uptrend line bounce',d:'Price pulls back to touch the uptrend line and resumes higher. Classic entry in an established uptrend.'},
+      {t:'sell',l:'Downtrend line reject',d:'Price rallies to touch the downtrend line and falls again. Classic short entry or exit point.'},
+      {t:'trend',l:'Trend line break',d:'Price breaks through the trend line with volume. The trend may be ending — prepare for a potential reversal.'},
+    ],
+    tips:['Trend lines are subjective — two traders may draw them slightly differently. The concept matters more than perfection.','A broken trend line often becomes the opposite — a broken uptrend line becomes resistance; a broken downtrend line becomes support.','The steeper the trend line angle, the less sustainable the trend. Very steep lines break frequently.']
+  },
+  dynsr:{title:'Dynamic S&R',full:'// Dynamic Support & Resistance',tag:'Trend Indicator',tagC:'rgba(0,212,170,.12)',tagT:'#00d4aa',
+    intro:'Unlike fixed horizontal levels, dynamic support and resistance moves with the price over time — using moving averages, trend lines or bands as flexible floors and ceilings.',
+    how:`Moving averages (especially EMAs) act as dynamic support in uptrends and dynamic resistance in downtrends. Price frequently "bounces" off these levels.\n\nThe key insight: in a strong uptrend, every pullback toward the EMA is a buying opportunity. In a downtrend, every rally toward the EMA is a selling opportunity.`,
+    formula:'Dynamic Support = EMA(20) or EMA(50) in uptrend\nDynamic Resistance = EMA(20) or EMA(50) in downtrend\nConfirmation: bounces + volume increase',
+    signals:[
+      {t:'buy',l:'EMA support bounce',d:'Price pulls back to the EMA in an uptrend and bounces. Look for a bullish candlestick pattern for confirmation.'},
+      {t:'sell',l:'EMA resistance reject',d:'Price rallies to the EMA in a downtrend and reverses. Look for a bearish candlestick for confirmation.'},
+      {t:'trend',l:'Level flip',d:'When price breaks through dynamic support, it often becomes dynamic resistance — and vice versa. Watch for the "role reversal".'},
+    ],
+    tips:['In trending markets, the 20 or 21 EMA is the most commonly used dynamic support/resistance level.','Always trade in the direction of the trend when using dynamic S&R — only buy bounces in uptrends, only sell rejections in downtrends.','The first time price tests a dynamic level after forming, the bounce is usually the strongest.']
+  },
+  gann:{title:'Gann Angles',full:'// W.D. Gann Price-Time Analysis',tag:'Advanced Trend Tool',tagC:'rgba(0,212,170,.12)',tagT:'#00d4aa',
+    intro:'Developed by W.D. Gann in the early 1900s, Gann Angles combine price movement and time into a unified system. The most famous is the 1×1 angle — one unit of price per one unit of time.',
+    how:`Gann believed that the relationship between price and time was the key to market analysis. His angles radiate out from swing highs and lows at specific angles (1×1, 2×1, 1×2 etc.).\n\nThe 45° angle (1×1) is considered the most important. Price above this angle = bullish. Price below = bearish. The angles act as dynamic support and resistance.`,
+    formula:'1×1 angle: 1 unit price per 1 unit time (45°)\n2×1 angle: 2 units price per 1 unit time (steeper)\n1×2 angle: 1 unit price per 2 units time (shallower)',
+    signals:[
+      {t:'buy',l:'Above 1×1 angle',d:'Price holding above the 1×1 Gann angle from a major low. Trend is considered healthy and bullish.'},
+      {t:'sell',l:'Below 1×1 angle',d:'Price breaks below the 1×1 Gann angle. Suggests weakening trend — the next angle becomes the target.'},
+      {t:'trend',l:'Angle-to-angle',d:'When price breaks one Gann angle, it tends to travel to the next one. Used to set price targets.'},
+    ],
+    tips:['Gann analysis is highly subjective — the starting point and scale dramatically affect the angles. It requires significant practice.','Gann\'s methods are controversial in modern trading. Many traders see value in the concepts but not the strict application.','Best used as a complementary tool alongside more conventional indicators rather than as a standalone system.']
+  },
+  heikinashi:{title:'Heikin Ashi',full:'// Modified Smoothing Candlesticks',tag:'Trend Visualisation',tagC:'rgba(0,212,170,.12)',tagT:'#00d4aa',
+    intro:'Heikin Ashi (Japanese for "average bar") is a modified candlestick chart that averages price data to create smoother candles, making trends much easier to see and reducing noise.',
+    how:`Each Heikin Ashi candle is calculated using averages of the current and previous candle's data — not raw price. This smoothing effect means trends appear as consecutive green or red candles without interruption.\n\nThe trade-off: Heikin Ashi candles don't show real price, volume, or exact open/close. They're excellent for trend identification but shouldn't be used for precise entry/exit price levels.`,
+    formula:'HA Close = (Open + High + Low + Close) / 4\nHA Open = (Previous HA Open + Previous HA Close) / 2\nHA High = Max(High, HA Open, HA Close)\nHA Low = Min(Low, HA Open, HA Close)',
+    signals:[
+      {t:'buy',l:'Green candles, no wicks',d:'Strong uptrend. Solid green Heikin Ashi candles with no lower wicks signal strong bullish momentum — hold long positions.'},
+      {t:'sell',l:'Red candles, no wicks',d:'Strong downtrend. Solid red candles with no upper wicks signal strong bearish momentum — hold short positions.'},
+      {t:'trend',l:'Doji-shaped candle',d:'Small body with wicks on both sides = trend is pausing or changing. Wait for the next candle\'s direction before acting.'},
+    ],
+    tips:['Use Heikin Ashi for trend direction identification, then switch to regular candles for precise entry/exit timing.','Heikin Ashi excels at showing you when to stay in a trade — the smoothing helps you hold through small retracements.','Do not use Heikin Ashi prices for stop-loss calculations — always reference real price candlestick levels.']
+  },
+  rsi:{title:'RSI',full:'// Relative Strength Index',tag:'Momentum Oscillator',tagC:'rgba(77,158,247,.12)',tagT:'#4d9ef7',
+    intro:'Developed by J. Welles Wilder in 1978, RSI is one of the most widely used indicators in the world. It measures the speed and magnitude of recent price changes on a 0–100 scale.',
+    how:`RSI compares average gains to average losses over the last 14 periods (by default). When price rises many days in a row, RSI climbs toward 100. When it falls many days, RSI drops toward 0.\n\nThe critical insight: extreme readings (above 70 or below 30) don't guarantee a reversal, but they indicate the move may be running out of steam. RSI is best used as a filter, not a standalone signal.`,
+    formula:'RSI = 100 − [100 / (1 + RS)]\nRS = Average Gain(14) / Average Loss(14)\nOverbought: RSI > 70 | Oversold: RSI < 30',
+    signals:[
+      {t:'buy',l:'Oversold (< 30)',d:'RSI drops below 30 then turns back up. Price has fallen fast — momentum may be exhausted. Look for bullish confirmation candle.'},
+      {t:'sell',l:'Overbought (> 70)',d:'RSI rises above 70 then starts falling. Price has risen fast — a pullback may be coming. Look for bearish confirmation.'},
+      {t:'trend',l:'RSI Divergence',d:'Price makes a new high but RSI makes a lower high (bearish divergence). Price makes new low but RSI makes higher low (bullish divergence).'},
+    ],
+    tips:['In strong trends, RSI can stay above 70 or below 30 for extended periods. Never trade against a strong trend based on RSI alone.','RSI divergence is more powerful than the overbought/oversold signals — it often precedes significant reversals.','You can adjust thresholds: use 80/20 for crypto (more volatile), 65/35 for less volatile assets to reduce false signals.']
+  },
+  macd:{title:'MACD',full:'// Moving Average Convergence Divergence',tag:'Momentum Indicator',tagC:'rgba(77,158,247,.12)',tagT:'#4d9ef7',
+    intro:'MACD combines two EMAs to show both trend direction and momentum strength simultaneously. It\'s arguably the most complete single indicator available to traders.',
+    how:`MACD has three components: (1) the MACD Line (EMA12 minus EMA26), (2) the Signal Line (9-period EMA of MACD line), and (3) the Histogram (difference between them).\n\nWhen the fast EMA is above the slow EMA, MACD is positive (bullish). Green histogram bars = building momentum. Red bars = fading momentum. The histogram often shrinks before the crossover happens — giving early warning.`,
+    formula:'MACD Line = EMA(12) − EMA(26)\nSignal Line = EMA(9) of MACD Line\nHistogram = MACD Line − Signal Line',
+    signals:[
+      {t:'buy',l:'Bullish crossover',d:'MACD line crosses above Signal line. Especially powerful when it happens below the zero line — confirms a major trend shift up.'},
+      {t:'sell',l:'Bearish crossover',d:'MACD line crosses below Signal line. Especially significant above the zero line — confirms downside momentum is taking over.'},
+      {t:'trend',l:'MACD Divergence',d:'Price makes new high but MACD makes lower high = hidden weakness. This is MACD\'s most powerful signal for spotting coming reversals.'},
+    ],
+    tips:['MACD is a lagging indicator — it confirms trends rather than predicting them. Combine with RSI for timing.','The histogram shrinking toward zero often happens before the actual line crossover — watch this as an early warning.','On higher timeframes (daily, weekly), MACD crossovers carry much more weight than on lower timeframes.']
+  },
+  stoch:{title:'Stochastic',full:'// Stochastic Oscillator',tag:'Momentum Oscillator',tagC:'rgba(77,158,247,.12)',tagT:'#4d9ef7',
+    intro:'The Stochastic Oscillator compares a closing price to its price range over a specific period, generating a 0–100 value. It measures where price closed relative to its recent high-low range.',
+    how:`Stochastic has two lines: %K (the fast line) and %D (a smoothed signal line). Above 80 = overbought. Below 20 = oversold.\n\nUnlike RSI which measures speed, Stochastic measures position — where did price close within the recent range? A close near the top = momentum favours buyers. A close near the bottom = momentum favours sellers.`,
+    formula:'%K = (Close − Lowest Low) / (Highest High − Lowest Low) × 100\n%D = 3-period SMA of %K\nOverbought: > 80 | Oversold: < 20',
+    signals:[
+      {t:'buy',l:'%K crosses above %D (< 20)',d:'Fast line crosses above signal line in oversold territory. Price closed near the top of its range after being depressed — bullish.'},
+      {t:'sell',l:'%K crosses below %D (> 80)',d:'Fast line crosses below signal in overbought territory. Price failing to hold near range highs — bearish.'},
+      {t:'trend',l:'Stoch Divergence',d:'Price makes new low but Stochastic makes higher low — bullish divergence. Similar logic to RSI divergence.'},
+    ],
+    tips:['Stochastic generates many signals in ranging markets, making it useful for mean-reversion trading but dangerous in strong trends.','The slow Stochastic (with smoothing applied) generates fewer but more reliable signals than the default fast version.','Most effective when combined with a trend filter — only take buy signals from oversold in uptrends, sell signals from overbought in downtrends.']
+  },
+  divergence:{title:'Divergence',full:'// Price vs Indicator Disagreement',tag:'Advanced Signal Technique',tagC:'rgba(77,158,247,.12)',tagT:'#4d9ef7',
+    intro:'Divergence occurs when the price of an asset and a momentum indicator (RSI, MACD, Stochastic) move in opposite directions. It\'s one of the most powerful signals in technical analysis.',
+    how:`Regular Bearish Divergence: price makes a higher high, but the indicator makes a lower high. This means momentum is weakening even though price is still rising — a reversal may be coming.\n\nRegular Bullish Divergence: price makes a lower low, but the indicator makes a higher low. Selling pressure is weakening despite lower prices — a bounce or reversal may be near.\n\nHidden divergence signals trend continuation — the opposite of regular divergence.`,
+    formula:'Bearish divergence: price HH + indicator LH → sell signal\nBullish divergence: price LL + indicator HL → buy signal\nHidden bearish: price LH + indicator HH → trend continues down',
+    signals:[
+      {t:'buy',l:'Bullish divergence',d:'Price makes a new low but RSI/MACD makes a higher low. Selling momentum is fading — potential reversal upward.'},
+      {t:'sell',l:'Bearish divergence',d:'Price makes a new high but RSI/MACD makes a lower high. Buying momentum is fading — potential reversal downward.'},
+      {t:'trend',l:'Hidden divergence',d:'Signals trend continuation, not reversal. Used to confirm re-entry in the direction of an established trend after a pullback.'},
+    ],
+    tips:['Divergence is more reliable on higher timeframes (4H, Daily, Weekly). Lower timeframes generate many false divergences.','Divergence shows that a reversal may happen — it doesn\'t tell you when. Price can diverge for several candles before turning.','The best divergences occur at key support/resistance levels, Fibonacci retracements, or after extended trending moves.']
+  },
+  bb:{title:'Bollinger Bands',full:'// Volatility Bands Around SMA(20)',tag:'Volatility Indicator',tagC:'rgba(201,168,76,.2)',tagT:'#c9a84c',
+    intro:'Created by John Bollinger in the 1980s, Bollinger Bands dynamically adjust to market volatility — expanding in volatile markets and contracting when calm. Statistically, ~95% of all price action occurs within the bands.',
+    how:`The three bands: (1) Middle = 20-period SMA, (2) Upper = SMA + 2 standard deviations, (3) Lower = SMA − 2 standard deviations.\n\nWhen bands are wide = high volatility. When narrow (the "squeeze") = low volatility, energy building for a big move. Price touching the outer bands doesn't guarantee reversal — in strong trends, price can "walk the band".`,
+    formula:'Middle Band = SMA(20)\nUpper Band = SMA(20) + (2 × Std Dev)\nLower Band = SMA(20) − (2 × Std Dev)\nStd Dev calculated over 20 periods',
+    signals:[
+      {t:'buy',l:'Lower band touch',d:'Price touches the lower band in a ranging market. Statistically low relative to recent history — look for bullish confirmation before buying.'},
+      {t:'sell',l:'Upper band touch',d:'Price touches the upper band. Statistically high — may be time to take profits or prepare for a pullback.'},
+      {t:'trend',l:'The Squeeze',d:'Bands narrow sharply (low volatility). A big directional move is likely coming. Wait for the breakout direction before taking a position.'},
+    ],
+    tips:['In strong trends, price "walks the band" — stays near the upper band (uptrend) or lower band (downtrend) for extended periods. A touch alone is never a reversal signal.','The Bollinger Bounce strategy works best in sideways/ranging markets. In trending markets it fails frequently.','The Squeeze (narrow bands) is one of the most reliable setups for anticipating large price moves.']
+  },
+  candlestick:{title:'Candlestick Patterns',full:'// Japanese Price Action Signals',tag:'Pattern Recognition',tagC:'rgba(201,168,76,.2)',tagT:'#c9a84c',
+    intro:'Candlestick patterns are formations in price action that signal potential reversals or continuations. Developed in 18th century Japan, they remain among the most widely used tools in modern trading.',
+    how:`Each candle shows four prices: open, high, low, close. The body shows the distance between open and close. The wicks (shadows) show the high and low. The colour shows direction: green/white = closed higher, red/black = closed lower.\n\nPatterns range from single candles (hammer, doji, shooting star) to multi-candle formations (engulfing, morning star, three white soldiers).`,
+    formula:'Key reversal patterns: Hammer, Inverted Hammer, Doji\nShooting Star, Hanging Man, Spinning Top\nEngulfing (bullish/bearish), Morning/Evening Star\nThree White Soldiers / Three Black Crows',
+    signals:[
+      {t:'buy',l:'Bullish patterns',d:'Hammer (long lower wick), Bullish Engulfing (large green candle engulfs previous red), Morning Star (3-candle reversal) — all signal potential upward reversal.'},
+      {t:'sell',l:'Bearish patterns',d:'Shooting Star (long upper wick at top), Bearish Engulfing, Evening Star — signal potential downward reversal after an uptrend.'},
+      {t:'trend',l:'Continuation patterns',d:'Three White Soldiers (3 consecutive strong green candles) = trend continuation up. Three Black Crows = continuation down.'},
+    ],
+    tips:['Candlestick patterns work best at key levels — support, resistance, Fibonacci levels, or Bollinger Band extremes.','A single candle pattern at a random price is meaningless. Context and location are everything.','The longer the wick relative to the body, the more significant the rejection at that price level.']
+  },
+  renko:{title:'Renko Charts',full:'// Brick-Based Noise Filter',tag:'Alternative Chart Type',tagC:'rgba(201,168,76,.2)',tagT:'#c9a84c',
+    intro:'Renko charts (from the Japanese "renga" meaning brick) eliminate time entirely and only draw new bricks when price moves by a fixed amount. The result is a remarkably clean view of trend direction.',
+    how:`Instead of plotting one candle per time period, Renko only adds a new brick when price moves by a pre-set amount (e.g. $100 for Bitcoin). Time becomes irrelevant — a Renko chart can stay on the same brick for hours if price doesn't move enough.\n\nThis filtering removes the noise of small fluctuations, making trend direction and reversals much clearer. Great for beginners who feel overwhelmed by choppy candlestick charts.`,
+    formula:'Brick size = fixed price movement amount\nNew green brick: price rises by 1 brick size above previous\nNew red brick: price falls by 1 brick size below previous\nNo time axis — only price movement triggers new bricks',
+    signals:[
+      {t:'buy',l:'First green brick',d:'After a series of red bricks, the first green brick appears. The trend may be reversing upward.'},
+      {t:'sell',l:'First red brick',d:'After a series of green bricks, the first red brick appears. The trend may be reversing downward.'},
+      {t:'trend',l:'Consecutive bricks',d:'Multiple consecutive bricks of the same colour = strong trend. The more bricks in a row, the stronger the momentum.'},
+    ],
+    tips:['Brick size selection is critical — too small and noise remains, too large and you miss good entries. Test different sizes.','Renko is excellent for trend identification and eliminating emotion, but terrible for precise entry/exit timing.','Renko works particularly well for swing traders who want to hold positions through trend phases without being shaken out by volatility.']
+  },
+  harmonic:{title:'Harmonic Patterns',full:'// Fibonacci Ratio Price Patterns',tag:'Advanced Pattern Trading',tagC:'rgba(201,168,76,.2)',tagT:'#c9a84c',
+    intro:'Harmonic patterns are specific price structures built from Fibonacci ratios. They define precise buy or sell zones called the Potential Reversal Zone (PRZ). Major patterns include Gartley, Bat, Crab, and Butterfly.',
+    how:`Each harmonic pattern is defined by specific Fibonacci ratios between its XABCD turning points. For example, in a Gartley: AB = 61.8% of XA, BC = 38.2–88.6% of AB, CD = 127.2–161.8% extension of BC.\n\nWhen price reaches the D point (the PRZ), traders look for reversal signals. The precision of the Fibonacci ratios is what makes harmonic patterns unique — if the ratios don't align, it's not a valid pattern.`,
+    formula:'Gartley: AB=61.8% XA | CD=78.6% XA\nBat: AB=38.2-50% XA | CD=88.6% XA\nCrab: AB=38.2-61.8% XA | CD=161.8% XA\nButterfly: AB=78.6% XA | CD=127-161.8% XA',
+    signals:[
+      {t:'buy',l:'Bullish PRZ',d:'Price reaches the D point of a bullish harmonic pattern (price is low). Enter long with tight stop below D point.'},
+      {t:'sell',l:'Bearish PRZ',d:'Price reaches the D point of a bearish harmonic pattern (price is high). Enter short with tight stop above D point.'},
+      {t:'trend',l:'PRZ confirmation',d:'Never enter at the PRZ without confirmation — look for a reversal candle, RSI divergence, or volume spike at the D point.'},
+    ],
+    tips:['Harmonic patterns have a high learning curve — start by learning the Gartley before studying the others.','The most important skill is accurately identifying the XABCD swing points. Software tools like TradingView can auto-detect these patterns.','Harmonic patterns fail frequently. Always use strict risk management — the tight stop is what makes this approach viable.']
+  },
+  elliott:{title:'Elliott Wave',full:'// 5-Wave Impulse + 3-Wave Corrective',tag:'Advanced Wave Theory',tagC:'rgba(201,168,76,.2)',tagT:'#c9a84c',
+    intro:'Developed by Ralph Nelson Elliott in the 1930s, Elliott Wave Theory proposes that market prices move in predictable, repetitive wave patterns driven by collective investor psychology.',
+    how:`The theory states that price moves in a 5-wave impulse structure (waves 1,2,3,4,5) in the direction of the trend, followed by a 3-wave corrective structure (waves A, B, C) against the trend.\n\nWithin each wave exists smaller sub-waves following the same pattern (fractal nature). Wave 3 is always the strongest and longest. Wave 4 never overlaps wave 1. These rules help identify the current wave position.`,
+    formula:'Impulse: 5 waves (1-2-3-4-5) in trend direction\nCorrection: 3 waves (A-B-C) against trend\nRules: Wave 2 < Wave 1 start | Wave 3 is longest\nWave 4 cannot overlap Wave 1 price territory',
+    signals:[
+      {t:'buy',l:'Wave 2 or 4 bottom',d:'End of corrective wave 2 or 4 = entry point for the next impulsive wave up (Wave 3 or 5). Wave 3 is the most powerful move.'},
+      {t:'sell',l:'Wave 5 top',d:'End of the 5-wave impulse = highest risk area. Following A-B-C correction can retrace 38–62% of the entire move.'},
+      {t:'trend',l:'Wave 3 entry',d:'Beginning of Wave 3 (after Wave 2 correction) is the highest-probability trade setup in Elliott Wave — strong momentum confirms.'},
+    ],
+    tips:['Elliott Wave is notoriously subjective — experienced traders often disagree on wave counts. It\'s a framework for thinking, not a precise formula.','Always combine wave counts with other tools (RSI, Fibonacci, volume) for confirmation.','Elliott Wave is best applied on higher timeframes (daily, weekly) where patterns are cleaner and less subject to noise.']
+  },
+  sr:{title:'Support & Resistance',full:'// Key Horizontal Price Zones',tag:'Market Structure',tagC:'rgba(176,110,245,.15)',tagT:'#b06ef5',
+    intro:'Support and resistance are the most fundamental concepts in technical analysis. Support is a price zone where buying interest historically overcomes selling pressure. Resistance is where selling overwhelms buying.',
+    how:`These levels form because human psychology is consistent — traders remember past prices. When price reaches a level where it reversed before, many traders expect it to reverse again, creating a self-fulfilling tendency.\n\nThe more times a level has been tested and held, the more significant it is. When price finally breaks through a support level, that level often becomes resistance — and vice versa. This is called a "role reversal".`,
+    formula:'Support: horizontal zone where price has bounced up multiple times\nResistance: horizontal zone where price has been rejected multiple times\nStrength: more tests + longer ago = stronger level',
+    signals:[
+      {t:'buy',l:'Support bounce',d:'Price falls to a known support level and shows signs of holding (reversal candle, RSI oversold, volume spike). Enter long with stop below support.'},
+      {t:'sell',l:'Resistance rejection',d:'Price rallies to known resistance and fails to break through. Enter short or take profit with stop above resistance.'},
+      {t:'trend',l:'Level breakout',d:'Price breaks through support or resistance with strong volume. The broken level often becomes the opposite — role reversal confirms the move.'},
+    ],
+    tips:['Round numbers ($50,000, $100) act as psychological support and resistance — they attract significant buying and selling interest.','The more times a level has been tested, the more likely it eventually breaks — repeated testing weakens support/resistance.','Always look for confluences — multiple indicators pointing to the same level (Fibonacci + horizontal S&R + EMA) creates a high-probability zone.']
+  },
+  sd:{title:'Supply & Demand',full:'// Institutional Order Flow Zones',tag:'Advanced Market Structure',tagC:'rgba(176,110,245,.15)',tagT:'#b06ef5',
+    intro:'Supply and demand zones go beyond traditional support/resistance by focusing on the origin of impulsive price moves — the zones where large institutional orders were placed, causing price to explode away.',
+    how:`A Demand Zone forms when price has been consolidating and then suddenly shoots up strongly. This consolidation was where big buyers accumulated positions. When price returns to this zone, those buyers may add more — creating support.\n\nA Supply Zone forms when price consolidates then drops sharply. Those sellers haven't exited their positions — when price returns, they sell again.\n\nThe key difference from S&R: these zones are defined by the origin of the move, not just where price bounced.`,
+    formula:'Demand Zone: consolidation base before a sharp rally\nSupply Zone: consolidation top before a sharp selloff\nValid zone: price left quickly (gap-like move), untested area\nStrength: larger move away = stronger zone',
+    signals:[
+      {t:'buy',l:'Price enters demand',d:'Price returns to an untested demand zone. Enter long near the bottom of the zone with stop below the zone.'},
+      {t:'sell',l:'Price enters supply',d:'Price returns to an untested supply zone. Enter short near the top of the zone with stop above the zone.'},
+      {t:'trend',l:'Zone strength',d:'Fresh zones (only tested once) are strongest. Once a zone has been tested multiple times, it weakens and may break.'},
+    ],
+    tips:['The best zones are those where price left very quickly — a gap-like candle away from the zone shows the imbalance was significant.','A zone is only valid until it\'s been tested. Once price returns to a zone and bounces, the zone is "used" and may not hold again.','Combine supply/demand zones with BOS and CHoCH for a complete institutional trading framework.']
+  },
+  ms:{title:'Market Structure',full:'// Higher Highs, Higher Lows',tag:'Core Framework',tagC:'rgba(176,110,245,.15)',tagT:'#b06ef5',
+    intro:'Market structure is the foundation of all trading — it simply describes the pattern of swing highs and lows to determine whether a market is in an uptrend, downtrend, or range.',
+    how:`An uptrend (bullish market structure) is defined by a series of Higher Highs (HH) and Higher Lows (HL). Each rally goes higher than the last, and each pullback stays above the previous pullback.\n\nA downtrend (bearish structure) shows Lower Lows (LL) and Lower Highs (LH). Each drop goes lower than the last. Understanding the current structure tells you the direction you should be trading.`,
+    formula:'Uptrend: HH + HL = buy dips\nDowntrend: LL + LH = sell rallies\nRange: equal highs + equal lows = no clear direction\nStructure shift: see BOS and CHoCH',
+    signals:[
+      {t:'buy',l:'Bullish structure',d:'Series of HH and HL confirmed. Trade with the trend — buy pullbacks to prior HLs or dynamic support. Don\'t fight the structure.'},
+      {t:'sell',l:'Bearish structure',d:'Series of LL and LH confirmed. Sell rallies to prior LHs or dynamic resistance. Shorting is the higher-probability direction.'},
+      {t:'trend',l:'Ranging market',d:'Equal highs and lows — no clear structure. Avoid trend-following strategies. Range trading between the boundaries is more appropriate.'},
+    ],
+    tips:['Market structure is fractal — the same patterns exist on every timeframe. A 15-min chart can show an uptrend inside a downtrend on the 4H chart.','Always trade in the direction of the higher timeframe structure. If the daily is bearish, be very cautious taking longs on the 1H.','Structure analysis should be the first thing you do before any other indicator — it sets the context for every trade.']
+  },
+  bos:{title:'BOS',full:'// Break of Structure',tag:'Market Structure Signal',tagC:'rgba(176,110,245,.15)',tagT:'#b06ef5',
+    intro:'A Break of Structure (BOS) occurs when price breaks past a significant swing high (in an uptrend) or swing low (in a downtrend), confirming the continuation of the existing trend.',
+    how:`In an uptrend: each time price breaks above the previous swing high = BOS to the upside. This confirms buyers are still in control and the trend is continuing.\n\nIn a downtrend: each break below a previous swing low = BOS to the downside. Sellers remain dominant.\n\nBOS is different from CHoCH — BOS confirms the trend is continuing, while CHoCH signals it may be reversing. Understanding this distinction is crucial for advanced trading.`,
+    formula:'Bullish BOS: price closes above a previous swing high\nBearish BOS: price closes below a previous swing low\nConfirmation: close above/below (wicks don\'t count)\nContext: only valid in an established trending market',
+    signals:[
+      {t:'buy',l:'Bullish BOS',d:'Price closes above previous swing high in uptrend. Confirms continuation — use the pullback after the BOS as your entry.'},
+      {t:'sell',l:'Bearish BOS',d:'Price closes below previous swing low in downtrend. Confirms continuation — rally after the BOS is a selling opportunity.'},
+      {t:'trend',l:'BOS target',d:'The next swing high (bullish) or swing low (bearish) becomes the natural price target following a BOS.'},
+    ],
+    tips:['Always use candle closes to confirm BOS — wicks that break a level and then close back below don\'t count as a valid BOS.','BOS combined with a pullback into a demand/supply zone creates one of the highest probability entry setups in modern trading.','Multiple BOS on the same timeframe in the same direction = very strong trend momentum.']
+  },
+  choch:{title:'CHoCH',full:'// Change of Character',tag:'Trend Reversal Signal',tagC:'rgba(176,110,245,.15)',tagT:'#b06ef5',
+    intro:'A Change of Character (CHoCH) is the first sign that an existing trend may be reversing. It occurs when price breaks the most recent swing low in an uptrend, or swing high in a downtrend — a warning the structure is shifting.',
+    how:`In an uptrend making Higher Highs and Higher Lows: a CHoCH occurs when price breaks below the most recent Higher Low. This is the first time in the uptrend that a key level has been violated — a warning sign.\n\nCHoCH alone doesn't confirm a reversal — it's an alert. A BOS in the opposite direction following the CHoCH confirms the trend has actually changed. Many traders wait for both before switching direction.`,
+    formula:'Bullish CHoCH: in downtrend, price breaks above recent LH\nBearish CHoCH: in uptrend, price breaks below recent HL\nConsequence: first alert that trend may be reversing\nConfirmation needed: BOS in new direction follows',
+    signals:[
+      {t:'buy',l:'Bullish CHoCH',d:'In a downtrend, price breaks above the most recent Lower High. First sign of potential reversal up — alert to look for long opportunities.'},
+      {t:'sell',l:'Bearish CHoCH',d:'In an uptrend, price breaks below the most recent Higher Low. First sign of potential reversal down — alert to tighten stops on longs.'},
+      {t:'trend',l:'CHoCH + BOS combo',d:'CHoCH (first warning) followed by BOS in the new direction (confirmation) = high-probability trend reversal setup. Wait for both.'},
+    ],
+    tips:['CHoCH is a warning, not a confirmed reversal. Many CHoCH formations fail and price resumes the original trend.','The best CHoCH setups occur after a prolonged trend — the longer and stronger the trend, the more significant the CHoCH.','Use CHoCH to start reducing position size or moving stops to break-even, not necessarily to immediately reverse direction.']
+  },
+  fib:{title:'Fibonacci',full:'// Fibonacci Retracement & Extension',tag:'Price Action Tool',tagC:'rgba(224,82,82,.15)',tagT:'#e05252',
+    intro:'Fibonacci retracement uses key mathematical ratios derived from the Fibonacci sequence to identify potential support/resistance levels during price pullbacks in a trend.',
+    how:`After a significant price move, traders draw Fibonacci levels from the swing low to swing high (in an uptrend). The key retracement levels are 23.6%, 38.2%, 50%, 61.8% and 78.6%.\n\nThe 61.8% level (the "golden ratio") is considered the most significant — a deep retracement that still holds this level is a strong sign the trend will continue. Price frequently bounces from these levels because so many traders watch and act on them.`,
+    formula:'Key levels: 23.6% | 38.2% | 50% | 61.8% | 78.6%\nExtensions: 127.2% | 161.8% | 261.8%\nGolden ratio: 61.8% (1/1.618)\nDrawn from: swing low to swing high (uptrend)',
+    signals:[
+      {t:'buy',l:'Retracement to 61.8%',d:'Price pulls back to the 61.8% Fibonacci level in an uptrend. High-probability bounce zone — look for bullish candle confirmation.'},
+      {t:'sell',l:'Retracement to 61.8%',d:'In a downtrend, a rally to the 61.8% retracement level is a high-probability short entry zone.'},
+      {t:'trend',l:'Extension targets',d:'Use Fibonacci extensions (127.2%, 161.8%) after a breakout to set profit targets for where the next impulse may end.'},
+    ],
+    tips:['Confluence is key: a Fibonacci level that also coincides with horizontal S&R, a moving average, or a supply/demand zone is much more powerful.','The 50% level is not a Fibonacci number mathematically, but it\'s widely watched psychologically — traders expect price to pause there.','Fibonacci works because of belief — so many traders use these levels that they become self-fulfilling support/resistance zones.']
+  },
+  fvg:{title:'Fair Value Gap',full:'// Price Imbalance / Market Gap',tag:'Smart Money Concept',tagC:'rgba(224,82,82,.15)',tagT:'#e05252',
+    intro:'A Fair Value Gap (FVG) is a three-candle price imbalance where the middle candle moves so fast that a gap is left between the wicks of the first and third candles. It represents an area where price traded inefficiently.',
+    how:`A bullish FVG: the high of candle 1 doesn't touch the low of candle 3 — a gap exists where price moved up so quickly, no real two-sided trading occurred. Institutional algorithms often return price to these gaps to "fill" the imbalance.\n\nThis concept comes from Smart Money Concepts (SMC) — the idea that institutional traders (banks, funds) create these imbalances and price tends to return to fill them before continuing in the original direction.`,
+    formula:'Bullish FVG: Low(Candle 3) > High(Candle 1)\nBearish FVG: High(Candle 3) < Low(Candle 1)\nFill: price returns to the gap area\nPartial fill is common — 50% of gap is key level',
+    signals:[
+      {t:'buy',l:'Bullish FVG fill',d:'Price returns to fill a bullish FVG (from below). The gap acts as support. Enter long as price enters the FVG with a stop below it.'},
+      {t:'sell',l:'Bearish FVG fill',d:'Price returns to fill a bearish FVG (from above). The gap acts as resistance. Enter short as price enters the FVG.'},
+      {t:'trend',l:'FVG + trend direction',d:'Only trade FVGs that align with the overall trend. Bullish FVGs in uptrends, bearish FVGs in downtrends — with-trend setups.'},
+    ],
+    tips:['FVGs are a relatively new concept popularised by the Smart Money Concepts community. Their effectiveness is debated among professional traders.','The middle 50% of an FVG (the "equilibrium") is often the strongest magnet for price to return to.','Not all FVGs get filled. High-momentum moves may leave FVGs that are never revisited — use other confluence factors.']
+  },
+  breakout:{title:'Breakout Trading',full:'// Range and Pattern Breakouts',tag:'Trading Strategy',tagC:'rgba(224,82,82,.15)',tagT:'#e05252',
+    intro:'Breakout trading involves entering a position when price moves outside a defined range, chart pattern, or consolidation area with increased volume — signalling the start of a new directional move.',
+    how:`Price spends most of its time in consolidation (ranging). When it breaks out, the move can be explosive because stop orders trigger and new momentum traders pile in.\n\nValid breakouts are confirmed by: (1) closing outside the level (wicks alone don't count), (2) increased volume on the breakout candle, (3) a retest of the broken level that holds. False breakouts are extremely common — this is why volume confirmation is essential.`,
+    formula:'Breakout entry: after close above resistance (or below support)\nStop placement: below the breakout level (or above)\nTarget: measure the range height and project it from breakout\nFalse breakout: price returns inside within 1-3 candles',
+    signals:[
+      {t:'buy',l:'Bullish breakout',d:'Price closes above a key resistance level or chart pattern (triangle, flag) with strong volume. Enter on the close or on a successful retest.'},
+      {t:'sell',l:'Bearish breakout',d:'Price closes below a key support level with strong volume. Enter on the close or on a retest of the broken support as new resistance.'},
+      {t:'hold',l:'False breakout',d:'Price breaks out then immediately returns inside the range. Wait — this "fakeout" often leads to a sharp move in the opposite direction.'},
+    ],
+    tips:['Volume is the #1 confirmation for breakouts. A breakout with declining volume has a high chance of being false.','The retest after a breakout is often the best entry — you miss the initial move but get better confirmation the breakout is real.','Consolidation patterns (flags, triangles, rectangles) are the most reliable setups for breakout trading.']
+  },
+  reversal:{title:'Reversal Patterns',full:'// Head & Shoulders, Double Tops/Bottoms',tag:'Chart Patterns',tagC:'rgba(224,82,82,.15)',tagT:'#e05252',
+    intro:'Reversal chart patterns are formations in price action that historically signal a trend is ending and may be about to reverse. The most reliable include Head & Shoulders, Double Top/Bottom, and Wedges.',
+    how:`Head & Shoulders: three peaks — left shoulder, higher head, right shoulder — with a "neckline" support below. When price breaks the neckline, the uptrend is likely ending.\n\nDouble Top: two roughly equal highs — price fails to break out twice, then drops. Double Bottom: two equal lows — price fails to break down twice, then rises.\n\nThese patterns are significant because they take time to form — the more time a pattern takes to develop, the more significant the eventual move.`,
+    formula:'H&S target: neckline − (head height − neckline)\nDouble Top target: neckline − (top − neckline)\nDouble Bottom target: neckline + (neckline − bottom)\nConfirmation: always wait for neckline break',
+    signals:[
+      {t:'sell',l:'Head & Shoulders',d:'Right shoulder forms, price breaks the neckline with volume. Short entry at neckline break or retest. Target = pattern height.'},
+      {t:'buy',l:'Inverse H&S',d:'Upside-down H&S after a downtrend. Neckline break with volume = buy signal. One of the most reliable bullish reversal patterns.'},
+      {t:'buy',l:'Double Bottom',d:'Two equal lows — second low fails to go lower and price breaks the middle peak (neckline). Strong bullish reversal signal.'},
+    ],
+    tips:['Never trade a reversal pattern until the neckline breaks — many patterns fail before completion. Patience is essential.','Volume should increase on the pattern break and decrease during the right shoulder / second top formation.','The target measurement (pattern height projected from neckline) is a minimum target, not a guaranteed one.']
+  },
+  volume:{title:'Volume Analysis',full:'// The Confirmation Tool',tag:'Volume Indicator',tagC:'rgba(249,115,22,.15)',tagT:'#f97316',
+    intro:'Volume is the number of units traded in a given period. It\'s the single best tool for confirming whether a price move is genuine. High volume = conviction. Low volume = suspicion.',
+    how:`The fundamental rule: price moving with high volume is significant; price moving with low volume should be questioned.\n\nBullish signs: prices rising with increasing volume, support levels holding with high volume. Bearish signs: prices falling on high volume, rallies occurring on low volume (no conviction).\n\nVolume divergence is very powerful: price makes a new high but volume is decreasing — buyers are running out of conviction, and a reversal may be near.`,
+    formula:'Volume spike: unusually high volume = significant event\nVolume divergence: price ↑ + volume ↓ = weakening move\nBreakout confirmation: high volume on breakout = real\nSupport test: high volume bounce = strong support',
+    signals:[
+      {t:'buy',l:'High volume rally',d:'Price rising with expanding volume — buyers are committed. The uptrend has conviction and is likely to continue.'},
+      {t:'sell',l:'High volume decline',d:'Price falling with high volume — sellers are aggressive. Downtrend has conviction. Avoid buying against this.'},
+      {t:'trend',l:'Volume divergence',d:'Rising price with falling volume = danger. Sellers are not yet active, but buyers are losing momentum. Watch closely.'},
+    ],
+    tips:['Volume on its own tells you little — it\'s most powerful when compared to average volume. 3× average volume on a breakout is very significant.','Volume analysis is the closest thing traders have to seeing "inside" institutional activity. Big players can\'t hide their volume.','On crypto exchanges, volume can be manipulated by wash trading. Always use reputable exchanges for volume analysis.']
+  },
+  moon:{title:'Moon Phases',full:'// Lunar Cycle Market Correlations',tag:'Alternative / Unconventional',tagC:'rgba(249,115,22,.15)',tagT:'#f97316',
+    intro:'Moon phase trading is a non-traditional approach based on observed correlations between lunar cycles and market behaviour. While not scientifically proven, it has a dedicated following among certain traders.',
+    how:`Some traders and researchers have noted statistical correlations between full moons, new moons, and market turning points. The theory: human psychology and behaviour (risk appetite, emotional decision-making) may be influenced by lunar cycles.\n\nStudies on this topic show mixed results. Some find weak correlations, especially in equity markets. Most professional traders consider this anecdotal and unreliable as a standalone tool.`,
+    formula:'New Moon: some studies show bullish tendency (30 days)\nFull Moon: some studies show bearish tendency (15 days)\nLunar cycle: ~29.5 days\nNote: correlations are weak and inconsistent',
+    signals:[
+      {t:'buy',l:'New Moon (theory)',d:'Some traders observe bullish market tendencies around the New Moon. Not reliable as a standalone signal — use only as a curiosity.'},
+      {t:'sell',l:'Full Moon (theory)',d:'Some traders observe bearish tendencies around the Full Moon. Again, extremely weak signal — treat with significant skepticism.'},
+      {t:'hold',l:'No strong signal',d:'Moon phase trading has no consistent scientific backing. We include it as it appears in popular trading education — but approach with healthy skepticism.'},
+    ],
+    tips:['Treat Moon Phase trading as a curiosity, not a serious strategy. No professional trading firm uses lunar cycles for systematic trading.','If you\'re interested in alternative analysis, time cycles and seasonality have much stronger statistical backing than lunar phases.','Understanding why these theories persist teaches you about trading psychology — the human need to find patterns in random data.']
+  },
+  season:{title:'Seasonality',full:'// Calendar-Based Market Tendencies',tag:'Statistical Patterns',tagC:'rgba(249,115,22,.15)',tagT:'#f97316',
+    intro:'Seasonality studies historical tendencies for markets to perform differently depending on the time of year, month, or day of week. Unlike Moon Phases, seasonality has reasonably solid statistical backing.',
+    how:`Well-documented seasonal patterns include: "Sell in May and go away" (stocks historically underperform May–October), the January Effect (small-cap stocks often outperform in January), and the Q4 Bitcoin rally observed in several years.\n\nThese patterns form because of recurring real-world events: earnings seasons, fiscal year ends, tax harvesting, institutional rebalancing, and retail investor behaviour around holidays.`,
+    formula:'"Sell in May": Nov–Apr historically stronger for stocks\nJanuary Effect: Jan often strong for small caps\nQ4 Crypto: Oct–Dec historically bullish for Bitcoin\nNote: past seasonality does not guarantee future results',
+    signals:[
+      {t:'buy',l:'Seasonal buy window',d:'Entering positions in historically strong seasonal periods (e.g. Nov–Dec for crypto, Nov–Apr for equities) with confirmed uptrend.'},
+      {t:'sell',l:'Seasonal caution',d:'Reducing exposure during historically weak periods (e.g. Sep–Oct for stocks) when other indicators also show weakness.'},
+      {t:'hold',l:'Conflicting signals',d:'Seasonality contradicts other signals. Don\'t override clear technical setups purely based on calendar — use seasonality as a filter.'},
+    ],
+    tips:['Seasonality is a probabilistic tendency, not a certainty. Every year can deviate significantly from historical averages.','The strongest use of seasonality is as a filter: combine it with your usual technical analysis rather than using it as a standalone strategy.','Seasonality in crypto is newer and less established than in equities. Be cautious about over-fitting historical patterns in young markets.']
+  },
+};
+
+/* ── CHART GENERATOR ── */
+function makeChartData(key){
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const gc = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)';
+  const prices=[50,51,52,50,53,55,54,57,59,58,61,64,63,66,68,67,65,62,60,57,55,52,50,48,46,45,47,49,51,53];
+  const labels=prices.map((_,i)=>`D${i+1}`);
+  const ema=(d,n)=>{const k=2/(n+1);let e=[d[0]];for(let i=1;i<d.length;i++)e.push((d[i]-e[i-1])*k+e[i-1]);return e;};
+  const smaArr=(d,n)=>d.map((_,i)=>i<n-1?null:d.slice(i-n+1,i+1).reduce((a,b)=>a+b)/n);
+  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:isDark?'#6b7a8d':'#8a97a8',font:{size:10,family:'DM Mono'},boxWidth:10}}},scales:{x:{ticks:{color:gc,maxTicksLimit:8,font:{size:10}},grid:{color:isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.05)'}},y:{ticks:{color:gc,font:{size:10}},grid:{color:isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.05)'}}}};
+
+  if(['sma','trendlines','dynsr','gann','heikinashi'].includes(key)){
+    const s10=smaArr(prices,10),s20=smaArr(prices,20);
+    return{type:'line',data:{labels,datasets:[{label:'Price',data:prices,borderColor:isDark?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.25)',borderWidth:1.5,pointRadius:0,tension:.3},{label:'SMA 10',data:s10,borderColor:'#00d4aa',borderWidth:2,pointRadius:0,tension:.4},{label:'SMA 20',data:s20,borderColor:'#c9a84c',borderWidth:2,pointRadius:0,tension:.4,borderDash:[5,4]}]},options:opts};
+  }
+  if(['ema'].includes(key)){
+    const e10=ema(prices,10),e20=ema(prices,20),s10=smaArr(prices,10);
+    return{type:'line',data:{labels,datasets:[{label:'Price',data:prices,borderColor:isDark?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.2)',borderWidth:1.5,pointRadius:0,tension:.3},{label:'SMA 10',data:s10,borderColor:'#4d9ef7',borderWidth:1.5,borderDash:[5,4],pointRadius:0,tension:.4},{label:'EMA 10',data:e10,borderColor:'#00d4aa',borderWidth:2.5,pointRadius:0,tension:.4}]},options:opts};
+  }
+  if(['rsi','divergence','stoch'].includes(key)){
+    const rsi=prices.map((_,i)=>{if(i<5)return 50;const sl=prices.slice(Math.max(0,i-14),i+1);let g=0,l=0;for(let j=1;j<sl.length;j++){const d=sl[j]-sl[j-1];if(d>0)g+=d;else l-=d;}const ag=g/sl.length,al=l/sl.length;return al===0?100:100-(100/(1+(ag/al)));});
+    return{type:'line',data:{labels,datasets:[{label:'RSI',data:rsi,borderColor:'#4d9ef7',borderWidth:2,pointRadius:0,tension:.4},{label:'Overbought (70)',data:Array(30).fill(70),borderColor:'rgba(224,82,82,.5)',borderWidth:1,borderDash:[6,4],pointRadius:0},{label:'Oversold (30)',data:Array(30).fill(30),borderColor:'rgba(0,212,170,.5)',borderWidth:1,borderDash:[6,4],pointRadius:0}]},options:{...opts,scales:{...opts.scales,y:{...opts.scales.y,min:0,max:100}}}};
+  }
+  if(['macd'].includes(key)){
+    const e12=ema(prices,12),e26=ema(prices,26);
+    const ml=prices.map((_,i)=>e12[i]-e26[i]);
+    const sl=ema(ml,9);
+    const hist=ml.map((m,i)=>m-sl[i]);
+    return{type:'bar',data:{labels,datasets:[{type:'bar',label:'Histogram',data:hist,backgroundColor:hist.map(v=>v>=0?'rgba(0,212,170,0.5)':'rgba(224,82,82,0.5)'),yAxisID:'y'},{type:'line',label:'MACD',data:ml,borderColor:'#f97316',borderWidth:2,pointRadius:0,tension:.4,yAxisID:'y'},{type:'line',label:'Signal',data:sl,borderColor:isDark?'rgba(255,255,255,.6)':'rgba(0,0,0,.5)',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.4,yAxisID:'y'}]},options:opts};
+  }
+  if(['bb'].includes(key)){
+    const n=20,u=[],lo=[],mid=[];
+    prices.forEach((_,i)=>{if(i<n-1){u.push(null);lo.push(null);mid.push(null);return;}const sl=prices.slice(i-n+1,i+1);const m=sl.reduce((a,b)=>a+b)/n;const sd=Math.sqrt(sl.map(p=>(p-m)**2).reduce((a,b)=>a+b)/n);mid.push(m);u.push(m+2*sd);lo.push(m-2*sd);});
+    return{type:'line',data:{labels,datasets:[{label:'Upper',data:u,borderColor:'rgba(201,168,76,.6)',borderWidth:1.5,pointRadius:0,tension:.4,fill:'+1',backgroundColor:'rgba(201,168,76,.05)'},{label:'Middle SMA(20)',data:mid,borderColor:'#c9a84c',borderWidth:2,pointRadius:0,tension:.4},{label:'Lower',data:lo,borderColor:'rgba(201,168,76,.6)',borderWidth:1.5,pointRadius:0,tension:.4},{label:'Price',data:prices,borderColor:isDark?'rgba(255,255,255,0.7)':'rgba(0,0,0,0.5)',borderWidth:2,pointRadius:0,tension:.3}]},options:opts};
+  }
+  /* default price chart */
+  return{type:'line',data:{labels,datasets:[{label:'Price',data:prices,borderColor:'#00d4aa',borderWidth:2,pointRadius:0,tension:.3,fill:true,backgroundColor:'rgba(0,212,170,0.06)'}]},options:opts};
+}
+
+/* ── MODAL ── */
+let activeChart=null;
+function openModal(key){
+  const d=DATA[key];
+  if(!d)return;
+  document.getElementById('mTag').textContent=d.tag;
+  document.getElementById('mTag').style.cssText=`background:${d.tagC};color:${d.tagT}`;
+  document.getElementById('mTitle').textContent=d.title;
+  document.getElementById('mFull').textContent=d.full;
+  document.getElementById('mIntro').textContent=d.intro;
+  document.getElementById('mbody').innerHTML=`
+    <div class="chart-wrap">
+      <p class="chart-lbl">// simulated price chart</p>
+      <canvas id="mc" style="max-height:190px"></canvas>
+    </div>
+    <div class="msec">
+      <h3>How it works</h3>
+      ${d.how.split('\n\n').map(p=>`<p>${p}</p>`).join('')}
+      <div class="formula">${d.formula.replace(/\n/g,'<br>')}</div>
+    </div>
+    <div class="msec">
+      <h3>Signals</h3>
+      <div class="sgrid">
+        ${d.signals.map(s=>`<div class="sc ${s.t}"><p class="sc-lbl">${s.l}</p><p>${s.d}</p></div>`).join('')}
+      </div>
+    </div>
+    <div class="msec">
+      <h3>Key tips</h3>
+      <div class="tips">
+        ${d.tips.map(t=>`<div class="tip"><span class="tip-ico">💡</span><span>${t}</span></div>`).join('')}
+      </div>
+    </div>
+  `;
+  document.body.classList.add('locked');
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(()=>{
+    const ctx=document.getElementById('mc');
+    if(!ctx)return;
+    if(activeChart){activeChart.destroy();activeChart=null;}
+    const cfg=makeChartData(key);
+    activeChart=new Chart(ctx,cfg);
+  },60);
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  document.body.classList.remove('locked');
+}
+function handleOvClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* ── SCROLL REVEAL ── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*80);obs.unobserve(e.target);}});
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
