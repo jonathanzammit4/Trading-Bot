@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volatility & Patterns — ChartIQ Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body><nav id="nav">
+  <a href="index.html" class="nav-logo">
+    <span class="nlm">Chart<span>IQ</span></span>
+    <span class="nls">Learn</span>
+  </a>
+  <div class="nav-mid">
+    <a href="index.html" class="nl">Home</a>
+    <div class="nav-dd-wrap" id="navIndicators">
+      <a href="indicators.html" class="nl  has-dd">Indicators <span class="nl-arr">▾</span></a>
+      <div class="mega-dropdown" id="megaDropdown">
+        <div class="mega-inner">
+          <div class="mega-intro">
+            <p class="mega-intro-title">All indicators</p>
+            <p class="mega-intro-sub">6 categories covering every major tool used in technical analysis.</p>
+            <a href="indicators.html" class="mega-all-link">View all →</a>
+          </div>
+          <div class="mega-cats">
+            <a href="trend.html" class="mega-cat "><span class="mc-icon">📈</span><div><strong>Trend &amp; Moving Averages</strong><span>SMA, EMA, Heikin Ashi, Gann</span></div></a>
+            <a href="momentum.html" class="mega-cat "><span class="mc-icon">⚡</span><div><strong>Momentum &amp; Oscillators</strong><span>RSI, MACD, Stochastic, Divergence</span></div></a>
+            <a href="volatility.html" class="mega-cat act"><span class="mc-icon">🕯️</span><div><strong>Volatility &amp; Patterns</strong><span>Bollinger, Elliott Wave, Renko, Harmonic</span></div></a>
+            <a href="structure.html" class="mega-cat "><span class="mc-icon">🏗️</span><div><strong>Structure &amp; Levels</strong><span>S&amp;R, Supply/Demand, BOS, CHoCH</span></div></a>
+            <a href="priceaction.html" class="mega-cat "><span class="mc-icon">🎯</span><div><strong>Price Action &amp; Advanced</strong><span>Fibonacci, FVG, Breakout, Reversal</span></div></a>
+            <a href="volume.html" class="mega-cat "><span class="mc-icon">📊</span><div><strong>Volume &amp; Other Tools</strong><span>Volume, Moon Phases, Seasonality</span></div></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-r">
+    <div class="tt">
+      <button class="tb on" id="btnDark" onclick="setTheme('dark')" title="Dark">🌙</button>
+      <button class="tb" id="btnLight" onclick="setTheme('light')" title="Light">☀️</button>
+    </div>
+    <a href="index.html" class="nc">← Home</a>
+  </div>
+</nav>
+<div class="page-hero">
+  <div class="cat-accent" style="background:#c9a84c"></div>
+  <div class="page-hero-inner">
+    <a href="indicators.html" class="ph-back">← All indicators</a>
+    <span class="ptag" style="background:rgba(201,168,76,0.08);border-color:#c9a84c30;color:#c9a84c">Category 3 · 5 indicators</span>
+    <h1>🕯️ Volatility & Patterns</h1>
+    <p>Measure how much price is moving and identify repeating price structures that signal potential continuations or reversals in market direction.</p>
+  </div>
+</div>
+
+<div class="ind-grid" style="max-width:1172px;margin:0 auto">
+  <div class="ind-card reveal" onclick="openModal('bb')">
+    <div class="ind-card-bar" style="background:#c9a84c"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(201,168,76,.15);color:#c9a84c">Volatility</span>
+        <span class="ind-diff">★★★ Intermediate</span>
+      </div>
+      <h3>Bollinger Bands</h3>
+      <p class="ind-card-full">// Volatility Bands Around SMA(20)</p>
+      <p class="ind-card-desc">Three dynamic lines — a moving average and two standard deviation bands — that expand in volatile markets and contract when calm.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-hold">HOLD</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Bollinger Bands</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('candlestick')">
+    <div class="ind-card-bar" style="background:#c9a84c"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(201,168,76,.15);color:#c9a84c">Volatility</span>
+        <span class="ind-diff">★★☆ Beginner</span>
+      </div>
+      <h3>Candlestick Patterns</h3>
+      <p class="ind-card-full">// Japanese Price Action Signals</p>
+      <p class="ind-card-desc">Formations in price action that signal potential reversals or continuations. Developed in 18th century Japan, still used by every modern trader.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Candlestick Patterns</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('renko')">
+    <div class="ind-card-bar" style="background:#c9a84c"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(201,168,76,.15);color:#c9a84c">Volatility</span>
+        <span class="ind-diff">★★☆ Beginner</span>
+      </div>
+      <h3>Renko Charts</h3>
+      <p class="ind-card-full">// Brick-Based Noise Filter</p>
+      <p class="ind-card-desc">Eliminate time entirely and only draw new bricks when price moves a fixed amount — showing trend direction with remarkable clarity.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Renko Charts</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('harmonic')">
+    <div class="ind-card-bar" style="background:#c9a84c"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(201,168,76,.15);color:#c9a84c">Volatility</span>
+        <span class="ind-diff">★★★ Advanced</span>
+      </div>
+      <h3>Harmonic Patterns</h3>
+      <p class="ind-card-full">// Fibonacci Ratio Price Patterns</p>
+      <p class="ind-card-desc">Specific XABCD price structures built from precise Fibonacci ratios that define high-probability reversal zones.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Harmonic Patterns</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('elliott')">
+    <div class="ind-card-bar" style="background:#c9a84c"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(201,168,76,.15);color:#c9a84c">Volatility</span>
+        <span class="ind-diff">★★★ Advanced</span>
+      </div>
+      <h3>Elliott Wave</h3>
+      <p class="ind-card-full">// 5-Wave Impulse + 3-Wave Corrective</p>
+      <p class="ind-card-desc">Markets move in predictable 5-wave impulse cycles followed by 3-wave corrections — driven by collective investor psychology.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Elliott Wave</span><span class="ind-cta-arr">→</span></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="handleOvClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-bar" id="mHeadBar"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <span class="m-tag" id="mTag"></span>
+      <h2 id="mTitle"></h2>
+      <p class="m-full" id="mFull"></p>
+      <p class="m-intro" id="mIntro"></p>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <span class="fb">ChartIQ Learn</span>
+  <span class="fn">⚠ Educational only — not financial advice</span>
+  <span class="fc">© 2025</span>
+</footer>
+
+<script>
+window.INDICATORS = {
+  'bb': {"title": "Bollinger Bands", "full": "// Volatility Bands Around SMA(20)", "tag": "Volatility · Intermediate", "tagBg": "rgba(201,168,76,.15)", "tagColor": "#c9a84c", "accentColor": "#c9a84c", "_chartType": "bb", "intro": "Created by John Bollinger in the 1980s, Bollinger Bands dynamically adjust to volatility. Statistically, ~95% of all price action occurs within the bands.", "how": "The three bands: (1) Middle = 20-period SMA, (2) Upper = SMA + 2 standard deviations, (3) Lower = SMA − 2 standard deviations.\n\nWide bands = high volatility. Narrow bands (the \"Squeeze\") = low volatility, energy building for a big move. In strong trends, price can \"walk the band\" — staying near it for extended periods.", "formula": "Middle Band = SMA(20)\nUpper Band = SMA(20) + (2 × Std Dev)\nLower Band = SMA(20) − (2 × Std Dev)\nStd Dev calculated over 20 periods", "signals": [{"t": "buy", "l": "Lower band touch", "d": "Price touches the lower band in a ranging market. Statistically low — look for bullish confirmation before buying."}, {"t": "sell", "l": "Upper band touch", "d": "Price touches the upper band. Statistically high — may be time to take profits or prepare for a pullback."}, {"t": "hold", "l": "The Squeeze", "d": "Bands narrow sharply = low volatility, energy building. A big directional move is likely coming. Wait for the breakout direction before entering."}], "tips": ["In strong trends, price \"walks the band\" — staying near the upper (uptrend) or lower (downtrend) band. A touch alone is never a reversal signal.", "The Bollinger Bounce strategy works best in sideways/ranging markets — it fails frequently in trending markets.", "The Squeeze is one of the most reliable setups for anticipating large price moves. Watch for the first breakout candle."]},
+  'candlestick': {"title": "Candlestick Patterns", "full": "// Japanese Price Action Signals", "tag": "Volatility · Beginner", "tagBg": "rgba(201,168,76,.15)", "tagColor": "#c9a84c", "accentColor": "#c9a84c", "_chartType": "default", "intro": "Candlestick patterns are formations in price action that signal potential reversals or continuations. Developed in 18th century Japan, they remain among the most widely used tools in modern trading.", "how": "Each candle shows four prices: open, high, low, close. The body shows the distance between open and close. The wicks show the high and low. Green/white = closed higher, Red/black = closed lower.\n\nPatterns range from single candles (hammer, doji, shooting star) to multi-candle formations (engulfing, morning star, three white soldiers).", "formula": "Key reversals: Hammer · Doji · Shooting Star\nInverted Hammer · Hanging Man · Spinning Top\nMulti-candle: Engulfing · Morning/Evening Star\nContinuation: 3 White Soldiers · 3 Black Crows", "signals": [{"t": "buy", "l": "Bullish patterns", "d": "Hammer (long lower wick), Bullish Engulfing, Morning Star — all signal potential upward reversal after a downtrend."}, {"t": "sell", "l": "Bearish patterns", "d": "Shooting Star (long upper wick at top), Bearish Engulfing, Evening Star — signal downward reversal after an uptrend."}, {"t": "trend", "l": "Continuation patterns", "d": "Three White Soldiers (3 strong green candles) = uptrend continuation. Three Black Crows = downtrend continuation."}], "tips": ["Candlestick patterns work best at key levels — support, resistance, Fibonacci zones, or Bollinger Band extremes.", "A single candle pattern at a random location is mostly meaningless. Context and location are everything.", "The longer the wick relative to the body, the more significant the rejection at that price level."]},
+  'renko': {"title": "Renko Charts", "full": "// Brick-Based Noise Filter", "tag": "Volatility · Beginner", "tagBg": "rgba(201,168,76,.15)", "tagColor": "#c9a84c", "accentColor": "#c9a84c", "_chartType": "default", "intro": "Renko charts (from the Japanese \"renga\" meaning brick) eliminate time entirely and only draw new bricks when price moves by a fixed amount. The result is a remarkably clean view of trend direction.", "how": "Instead of one candle per time period, Renko adds a new brick only when price moves by a pre-set amount (e.g. $100 for Bitcoin). Time is irrelevant — a chart can stay on the same brick for hours.\n\nThis filtering removes the noise of small fluctuations, making trends much cleaner and easier to follow. Perfect for beginners overwhelmed by noisy candlestick charts.", "formula": "Brick size = fixed price movement amount\nNew green brick: price rises 1 brick above previous\nNew red brick: price falls 1 brick below previous\nNo time axis — only price movement creates bricks", "signals": [{"t": "buy", "l": "First green brick", "d": "After a series of red bricks, the first green brick appears. The trend may be reversing — watch for continuation."}, {"t": "sell", "l": "First red brick", "d": "After a series of green bricks, the first red brick appears. Potential trend reversal — consider exiting or shorting."}, {"t": "trend", "l": "Consecutive bricks", "d": "Multiple consecutive bricks of the same colour = strong trend. More bricks in a row = stronger momentum."}], "tips": ["Brick size is critical — too small and noise remains, too large and you miss entries. Test different sizes on your asset.", "Renko is excellent for trend identification but poor for precise entry/exit timing — combine with regular candles for entries.", "Works particularly well for swing traders who want to stay in trending positions without being shaken out by volatility."]},
+  'harmonic': {"title": "Harmonic Patterns", "full": "// Fibonacci Ratio Price Patterns", "tag": "Volatility · Advanced", "tagBg": "rgba(201,168,76,.15)", "tagColor": "#c9a84c", "accentColor": "#c9a84c", "_chartType": "default", "intro": "Harmonic patterns are specific price structures built from Fibonacci ratios. They define precise buy or sell zones called the Potential Reversal Zone (PRZ). Major patterns include Gartley, Bat, Crab, and Butterfly.", "how": "Each harmonic pattern is defined by specific Fibonacci ratios between its XABCD turning points. For example, in a Gartley: AB = 61.8% of XA, BC = 38.2–88.6% of AB, CD = 78.6% retracement of XA.\n\nWhen price reaches the D point (the PRZ), traders look for reversal signals. The precision of the Fibonacci ratios is what makes harmonic patterns unique — if the ratios don't align, it's not a valid pattern.", "formula": "Gartley: AB=61.8% XA | CD=78.6% XA retracement\nBat: AB=38.2-50% XA | CD=88.6% XA\nCrab: AB=38.2-61.8% XA | CD=161.8% XA extension\nButterfly: AB=78.6% XA | CD=127-161.8% XA", "signals": [{"t": "buy", "l": "Bullish PRZ", "d": "Price reaches D point of a bullish harmonic. Enter long near the bottom of the zone with a tight stop below."}, {"t": "sell", "l": "Bearish PRZ", "d": "Price reaches D point of a bearish harmonic. Enter short near the top of the zone with a tight stop above."}, {"t": "trend", "l": "PRZ confirmation", "d": "Never enter at the PRZ without a confirmation signal — reversal candle, RSI divergence, or volume spike at the D point."}], "tips": ["Harmonic patterns have a steep learning curve — start with the Gartley before studying the Bat, Crab, and Butterfly.", "Software tools (TradingView) can auto-detect harmonic patterns — let them do the ratio calculations.", "Harmonic patterns fail frequently. The tight stop at the D point is what makes this approach viable risk-management-wise."]},
+  'elliott': {"title": "Elliott Wave", "full": "// 5-Wave Impulse + 3-Wave Corrective", "tag": "Volatility · Advanced", "tagBg": "rgba(201,168,76,.15)", "tagColor": "#c9a84c", "accentColor": "#c9a84c", "_chartType": "default", "intro": "Developed by Ralph Nelson Elliott in the 1930s, Elliott Wave Theory proposes that price moves in predictable, repetitive wave patterns driven by collective investor psychology.", "how": "Price moves in a 5-wave impulse structure (1,2,3,4,5) in the direction of the trend, followed by a 3-wave correction (A, B, C) against the trend.\n\nWithin each wave exist smaller sub-waves following the same pattern (fractal nature). Key rules: Wave 2 never retraces 100% of Wave 1. Wave 3 is always the longest impulse wave. Wave 4 never overlaps Wave 1's price territory.", "formula": "Impulse: 5 waves (1-2-3-4-5) in trend direction\nCorrection: 3 waves (A-B-C) against trend\nRule 1: Wave 2 cannot go below Wave 1 start\nRule 2: Wave 3 is always the longest impulse wave\nRule 3: Wave 4 cannot overlap Wave 1 price territory", "signals": [{"t": "buy", "l": "End of Wave 2", "d": "End of corrective Wave 2 after Wave 1 = entry for the powerful Wave 3 move. Wave 3 is typically the strongest and longest."}, {"t": "sell", "l": "End of Wave 5", "d": "End of the 5-wave impulse = highest risk area. Following A-B-C correction can retrace 38–62% of the entire impulse."}, {"t": "trend", "l": "Wave 3 entry", "d": "Beginning of Wave 3 (after Wave 2 pullback) is the highest-probability setup — strong momentum confirms you're in the right wave."}], "tips": ["Elliott Wave is notoriously subjective — experienced traders often disagree on wave counts for the same chart.", "Always combine wave counts with Fibonacci levels, volume, and RSI for confirmation. Never use it in isolation.", "Best applied on higher timeframes (daily, weekly) where patterns are cleaner and less subject to noise."]}
+};
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
