@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momentum & Oscillators — ChartIQ Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body><nav id="nav">
+  <a href="index.html" class="nav-logo">
+    <span class="nlm">Chart<span>IQ</span></span>
+    <span class="nls">Learn</span>
+  </a>
+  <div class="nav-mid">
+    <a href="index.html" class="nl">Home</a>
+    <div class="nav-dd-wrap" id="navIndicators">
+      <a href="indicators.html" class="nl  has-dd">Indicators <span class="nl-arr">▾</span></a>
+      <div class="mega-dropdown" id="megaDropdown">
+        <div class="mega-inner">
+          <div class="mega-intro">
+            <p class="mega-intro-title">All indicators</p>
+            <p class="mega-intro-sub">6 categories covering every major tool used in technical analysis.</p>
+            <a href="indicators.html" class="mega-all-link">View all →</a>
+          </div>
+          <div class="mega-cats">
+            <a href="trend.html" class="mega-cat "><span class="mc-icon">📈</span><div><strong>Trend &amp; Moving Averages</strong><span>SMA, EMA, Heikin Ashi, Gann</span></div></a>
+            <a href="momentum.html" class="mega-cat act"><span class="mc-icon">⚡</span><div><strong>Momentum &amp; Oscillators</strong><span>RSI, MACD, Stochastic, Divergence</span></div></a>
+            <a href="volatility.html" class="mega-cat "><span class="mc-icon">🕯️</span><div><strong>Volatility &amp; Patterns</strong><span>Bollinger, Elliott Wave, Renko, Harmonic</span></div></a>
+            <a href="structure.html" class="mega-cat "><span class="mc-icon">🏗️</span><div><strong>Structure &amp; Levels</strong><span>S&amp;R, Supply/Demand, BOS, CHoCH</span></div></a>
+            <a href="priceaction.html" class="mega-cat "><span class="mc-icon">🎯</span><div><strong>Price Action &amp; Advanced</strong><span>Fibonacci, FVG, Breakout, Reversal</span></div></a>
+            <a href="volume.html" class="mega-cat "><span class="mc-icon">📊</span><div><strong>Volume &amp; Other Tools</strong><span>Volume, Moon Phases, Seasonality</span></div></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-r">
+    <div class="tt">
+      <button class="tb on" id="btnDark" onclick="setTheme('dark')" title="Dark">🌙</button>
+      <button class="tb" id="btnLight" onclick="setTheme('light')" title="Light">☀️</button>
+    </div>
+    <a href="index.html" class="nc">← Home</a>
+  </div>
+</nav>
+<div class="page-hero">
+  <div class="cat-accent" style="background:#4d9ef7"></div>
+  <div class="page-hero-inner">
+    <a href="indicators.html" class="ph-back">← All indicators</a>
+    <span class="ptag" style="background:rgba(77,158,247,0.08);border-color:#4d9ef730;color:#4d9ef7">Category 2 · 4 indicators</span>
+    <h1>⚡ Momentum & Oscillators</h1>
+    <p>Measure the speed and strength of price movement. Identify overbought and oversold conditions before they reverse, and spot when momentum is fading.</p>
+  </div>
+</div>
+
+<div class="ind-grid" style="max-width:1172px;margin:0 auto">
+  <div class="ind-card reveal" onclick="openModal('rsi')">
+    <div class="ind-card-bar" style="background:#4d9ef7"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(77,158,247,.12);color:#4d9ef7">Momentum</span>
+        <span class="ind-diff">★★☆ Beginner</span>
+      </div>
+      <h3>RSI</h3>
+      <p class="ind-card-full">// Relative Strength Index</p>
+      <p class="ind-card-desc">Measures the speed and magnitude of recent price changes on a 0–100 scale. Above 70 = overbought. Below 30 = oversold.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn RSI</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('macd')">
+    <div class="ind-card-bar" style="background:#4d9ef7"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(77,158,247,.12);color:#4d9ef7">Momentum</span>
+        <span class="ind-diff">★★★ Intermediate</span>
+      </div>
+      <h3>MACD</h3>
+      <p class="ind-card-full">// Moving Average Convergence Divergence</p>
+      <p class="ind-card-desc">Combines two EMAs to show both trend direction and momentum strength. The histogram reveals if momentum is building or fading.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn MACD</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('stoch')">
+    <div class="ind-card-bar" style="background:#4d9ef7"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(77,158,247,.12);color:#4d9ef7">Momentum</span>
+        <span class="ind-diff">★★☆ Beginner</span>
+      </div>
+      <h3>Stochastic</h3>
+      <p class="ind-card-full">// Stochastic Oscillator</p>
+      <p class="ind-card-desc">Compares the closing price to the price range over a period. Above 80 = overbought. Below 20 = oversold.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Stochastic</span><span class="ind-cta-arr">→</span></div>
+  </div>
+  <div class="ind-card reveal" onclick="openModal('divergence')">
+    <div class="ind-card-bar" style="background:#4d9ef7"></div>
+    <div class="ind-card-body">
+      <div class="ind-card-meta">
+        <span class="ind-type" style="background:rgba(77,158,247,.12);color:#4d9ef7">Momentum</span>
+        <span class="ind-diff">★★★ Intermediate</span>
+      </div>
+      <h3>Divergence</h3>
+      <p class="ind-card-full">// Price vs Indicator Disagreement</p>
+      <p class="ind-card-desc">When price and a momentum indicator move in opposite directions — one of the most powerful reversal signals in trading.</p>
+      <div class="ind-signals"><span class="isig isig-buy">BUY</span><span class="isig isig-sell">SELL</span><span class="isig isig-trend">TREND</span></div>
+    </div>
+    <div class="ind-card-cta"><span>Learn Divergence</span><span class="ind-cta-arr">→</span></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="handleOvClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-bar" id="mHeadBar"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <span class="m-tag" id="mTag"></span>
+      <h2 id="mTitle"></h2>
+      <p class="m-full" id="mFull"></p>
+      <p class="m-intro" id="mIntro"></p>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <span class="fb">ChartIQ Learn</span>
+  <span class="fn">⚠ Educational only — not financial advice</span>
+  <span class="fc">© 2025</span>
+</footer>
+
+<script>
+window.INDICATORS = {
+  'rsi': {"title": "RSI", "full": "// Relative Strength Index", "tag": "Momentum · Beginner", "tagBg": "rgba(77,158,247,.12)", "tagColor": "#4d9ef7", "accentColor": "#4d9ef7", "_chartType": "rsi", "intro": "Developed by J. Welles Wilder in 1978, RSI is one of the most widely used indicators in the world. It measures the speed and magnitude of recent price changes on a 0–100 scale.", "how": "RSI compares average gains to average losses over 14 periods (default). When price rises many days in a row, RSI climbs toward 100. When it falls many days, RSI drops toward 0.\n\nThe critical insight: extreme readings (above 70 or below 30) signal a move may be running out of steam. RSI is best used as a filter, not a standalone signal.", "formula": "RSI = 100 − [100 / (1 + RS)]\nRS = Average Gain(14) / Average Loss(14)\nOverbought: RSI > 70 | Oversold: RSI < 30\nDefault period: 14 candles", "signals": [{"t": "buy", "l": "Oversold (< 30)", "d": "RSI drops below 30 then turns back up. Price has fallen fast — momentum may be exhausted. Look for bullish confirmation candle."}, {"t": "sell", "l": "Overbought (> 70)", "d": "RSI rises above 70 then starts falling. Price has risen fast — a pullback may be coming. Look for bearish confirmation."}, {"t": "trend", "l": "RSI Divergence", "d": "Price makes new high but RSI makes lower high (bearish divergence). Momentum is fading even though price is rising — powerful reversal signal."}], "tips": ["In strong trends, RSI can stay above 70 or below 30 for extended periods. Never trade against a strong trend based on RSI alone.", "RSI divergence is more powerful than overbought/oversold levels alone — it often precedes significant reversals.", "Adjust thresholds to the market: 80/20 for volatile crypto, 65/35 for less volatile assets."]},
+  'macd': {"title": "MACD", "full": "// Moving Average Convergence Divergence", "tag": "Momentum · Intermediate", "tagBg": "rgba(77,158,247,.12)", "tagColor": "#4d9ef7", "accentColor": "#4d9ef7", "_chartType": "macd", "intro": "MACD combines two EMAs to show both trend direction and momentum strength simultaneously. It's arguably the most complete single indicator available to traders.", "how": "MACD has three components: (1) MACD Line (EMA12 minus EMA26), (2) Signal Line (9-period EMA of MACD), and (3) Histogram (difference between them).\n\nWhen the fast EMA is above the slow EMA, MACD is positive (bullish). Green histogram bars = building momentum. Red bars = fading momentum. The histogram often shrinks before the crossover — giving early warning.", "formula": "MACD Line = EMA(12) − EMA(26)\nSignal Line = EMA(9) of MACD Line\nHistogram = MACD Line − Signal Line\nStandard settings: 12, 26, 9", "signals": [{"t": "buy", "l": "Bullish crossover", "d": "MACD line crosses above Signal line. Especially powerful when this happens below the zero line — confirms a major trend shift upward."}, {"t": "sell", "l": "Bearish crossover", "d": "MACD line crosses below Signal line. Especially significant above the zero line — confirms downside momentum is taking over."}, {"t": "trend", "l": "MACD Divergence", "d": "Price makes new high but MACD makes lower high = hidden weakness. This is MACD's most powerful signal for spotting coming reversals."}], "tips": ["MACD is a lagging indicator — it confirms trends rather than predicting them. Combine with RSI for entry timing.", "The histogram shrinking toward zero often happens before the actual line crossover — watch this as early warning.", "On higher timeframes (daily, weekly), MACD crossovers carry much more weight than on lower timeframes."]},
+  'stoch': {"title": "Stochastic", "full": "// Stochastic Oscillator", "tag": "Momentum · Beginner", "tagBg": "rgba(77,158,247,.12)", "tagColor": "#4d9ef7", "accentColor": "#4d9ef7", "_chartType": "stoch", "intro": "The Stochastic Oscillator compares a closing price to its price range over a specific period. It measures where price closed relative to its recent high-low range — on a 0–100 scale.", "how": "Stochastic has two lines: %K (the fast line) and %D (a smoothed signal line). Above 80 = overbought. Below 20 = oversold.\n\nUnlike RSI which measures speed, Stochastic measures position — where did price close within the recent range? A close near the top = buyers in control. Near the bottom = sellers in control.", "formula": "%K = (Close − Lowest Low) / (Highest High − Lowest Low) × 100\n%D = 3-period SMA of %K\nOverbought: > 80 | Oversold: < 20\nDefault period: 14", "signals": [{"t": "buy", "l": "%K crosses above %D", "d": "Fast line crosses above signal line in oversold territory (< 20). Price closing near range top after being depressed — bullish."}, {"t": "sell", "l": "%K crosses below %D", "d": "Fast line crosses below signal in overbought territory (> 80). Price failing to hold near range highs — bearish."}, {"t": "trend", "l": "Stoch Divergence", "d": "Price makes new low but Stochastic makes higher low — bullish divergence, similar logic to RSI divergence."}], "tips": ["Stochastic generates many signals in ranging markets — useful for mean-reversion but dangerous in strong trends.", "The slow Stochastic (with extra smoothing) generates fewer but more reliable signals than the default fast version.", "Most effective combined with a trend filter: only take buy signals from oversold in uptrends."]},
+  'divergence': {"title": "Divergence", "full": "// Price vs Indicator Disagreement", "tag": "Momentum · Intermediate", "tagBg": "rgba(77,158,247,.12)", "tagColor": "#4d9ef7", "accentColor": "#4d9ef7", "_chartType": "rsi", "intro": "Divergence occurs when price and a momentum indicator (RSI, MACD, Stochastic) move in opposite directions. It's one of the most powerful and reliable signals in all of technical analysis.", "how": "Regular Bearish Divergence: price makes a higher high, but the indicator makes a lower high. Momentum is weakening even though price is still rising — reversal may be coming.\n\nRegular Bullish Divergence: price makes a lower low, but the indicator makes a higher low. Selling pressure is weakening despite lower prices — bounce or reversal may be near.\n\nHidden divergence signals trend continuation — the opposite of regular divergence.", "formula": "Bearish divergence: price HH + indicator LH → sell\nBullish divergence: price LL + indicator HL → buy\nHidden bearish: price LH + indicator HH → trend continues\nHidden bullish: price HL + indicator LL → trend continues", "signals": [{"t": "buy", "l": "Bullish divergence", "d": "Price makes a new low but RSI/MACD makes a higher low. Selling momentum is fading — potential reversal upward."}, {"t": "sell", "l": "Bearish divergence", "d": "Price makes a new high but RSI/MACD makes a lower high. Buying momentum is fading — potential reversal downward."}, {"t": "trend", "l": "Hidden divergence", "d": "Signals trend continuation, not reversal. Used to confirm re-entry in the direction of the trend after a pullback."}], "tips": ["Divergence is more reliable on higher timeframes (4H, Daily, Weekly). Lower timeframes generate many false signals.", "Divergence shows that a reversal may happen — it doesn't tell you when. Price can diverge for several candles before turning.", "The best divergences occur at key support/resistance levels, Fibonacci zones, or after extended trending moves."]}
+};
+</script>
+<script src="shared.js"></script>
+</body>
+</html>
