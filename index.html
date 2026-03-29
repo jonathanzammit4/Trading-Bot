@@ -1,208 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <title>Trading Bot</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #0f0f13; color: #e0e0e0; padding: 20px; }
-    h1 { font-size: 20px; margin-bottom: 16px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChartIQ Learn — Master Technical Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+[data-theme="dark"] {
+  --bg:#0a0c10;--bg2:#0f1318;--bg3:#161c24;--bg4:#1c242f;--surface:#1e2630;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
+  --text:#e4e9f0;--text2:#8a97a8;--text3:#505e6e;
+  --accent:#00d4aa;--accent-bg:rgba(0,212,170,0.08);--accent-bd:rgba(0,212,170,0.22);
+  --gold:#c9a84c;--gold-bg:rgba(201,168,76,0.08);--red:#e05252;
+  --shadow:0 24px 60px rgba(0,0,0,0.5);--shadow-sm:0 4px 16px rgba(0,0,0,0.3);
+}
+[data-theme="light"] {
+  --bg:#f5f4f0;--bg2:#edecea;--bg3:#e4e2de;--bg4:#dbd9d4;--surface:#ffffff;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.12);--border3:rgba(0,0,0,0.2);
+  --text:#1a1f28;--text2:#5a6470;--text3:#9aa3ae;
+  --accent:#008a6e;--accent-bg:rgba(0,138,110,0.07);--accent-bd:rgba(0,138,110,0.2);
+  --gold:#8a6b1e;--gold-bg:rgba(138,107,30,0.07);--red:#c03030;
+  --shadow:0 24px 60px rgba(0,0,0,0.12);--shadow-sm:0 4px 16px rgba(0,0,0,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;overflow-x:hidden;transition:background .35s,color .35s}
 
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    .card  { background: #1a1a24; border-radius: 10px; padding: 14px 18px; }
-    .card label { font-size: 12px; color: #888; }
-    .card .value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+nav{position:fixed;top:0;left:0;right:0;z-index:300;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:var(--bg);border-bottom:1px solid var(--border);transition:background .35s,border-color .35s}
+.nav-logo{display:flex;align-items:baseline;gap:6px;text-decoration:none}
+.nlm{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
+.nlm span{color:var(--accent)}
+.nls{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase}
+.nav-mid{display:flex;gap:4px}
+.nl{text-decoration:none;font-size:13px;font-weight:500;color:var(--text2);padding:6px 14px;border-radius:6px;transition:color .2s,background .2s;letter-spacing:.01em}
+.nl:hover,.nl.act{color:var(--text);background:var(--bg3)}
+.nav-r{display:flex;align-items:center;gap:12px}
+.tt{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:3px;cursor:pointer;gap:2px;transition:background .3s}
+.tb{width:28px;height:28px;border-radius:16px;border:none;cursor:pointer;background:transparent;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .25s;color:var(--text2)}
+.tb.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+.nc{text-decoration:none;background:var(--accent);color:#000;font-size:12px;font-weight:700;padding:8px 18px;border-radius:6px;letter-spacing:.02em;transition:opacity .2s,transform .2s}
+.nc:hover{opacity:.85;transform:translateY(-1px)}
 
-    .signal-box { border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
-                  font-size: 24px; font-weight: 700; text-align: center; }
-    .BUY  { background: #0d2e1a; color: #22c55e; border: 1px solid #166534; }
-    .SELL { background: #2e0d0d; color: #ef4444; border: 1px solid #7f1d1d; }
-    .HOLD { background: #1a1a24; color: #888;    border: 1px solid #333; }
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 32px 60px;position:relative;overflow:hidden}
+.hgrid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black,transparent)}
+.horb{position:absolute;top:10%;right:5%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,170,0.06) 0%,transparent 65%);pointer-events:none}
+.hi{max-width:1100px;margin:0 auto;width:100%;position:relative;z-index:2}
+.hey{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase;background:var(--accent-bg);border:1px solid var(--accent-bd);padding:5px 14px;border-radius:100px;margin-bottom:28px;animation:fu .5s ease both}
+.hey::before{content:'';width:5px;height:5px;background:var(--accent);border-radius:50%;animation:bl 2.5s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(52px,7.5vw,100px);font-weight:700;letter-spacing:-.03em;line-height:.95;margin-bottom:24px;animation:fu .5s ease both .08s}
+.hl{color:var(--accent);font-style:italic}
+.dim{color:var(--text2)}
+.hsub{font-size:17px;color:var(--text2);max-width:500px;line-height:1.75;margin-bottom:40px;animation:fu .5s ease both .16s}
+.hbtns{display:flex;gap:12px;flex-wrap:wrap;animation:fu .5s ease both .24s}
+.bp{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#000;font-weight:700;font-size:14px;padding:13px 28px;border-radius:8px;text-decoration:none;transition:transform .2s,opacity .2s}
+.bp:hover{transform:translateY(-2px);opacity:.9}
+.bs{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text);font-weight:600;font-size:14px;padding:13px 28px;border-radius:8px;text-decoration:none;border:1px solid var(--border2);transition:border-color .2s,background .2s}
+.bs:hover{border-color:var(--border3);background:var(--bg3)}
+.hstats{display:flex;gap:0;margin-top:64px;padding-top:40px;border-top:1px solid var(--border);animation:fu .5s ease both .32s;flex-wrap:wrap}
+.stat{padding:0 40px 0 0;margin-right:40px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.sv{font-family:'Fraunces',serif;font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.sv .ac{color:var(--accent)}
+.sl{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-top:6px}
 
-    canvas { width: 100% !important; }
-    .chart-wrap { background: #1a1a24; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+section{padding:96px 32px}
+.si{max-width:1100px;margin:0 auto}
+.slb{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px}
+.st{font-family:'Fraunces',serif;font-size:clamp(32px,4vw,52px);font-weight:700;letter-spacing:-.025em;line-height:1.05;margin-bottom:16px}
+.sb{font-size:16px;color:var(--text2);max-width:580px;line-height:1.8}
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th    { text-align: left; padding: 8px 12px; color: #666; font-weight: 500;
-            border-bottom: 1px solid #222; }
-    td    { padding: 8px 12px; border-bottom: 1px solid #1a1a24; }
-    .log-wrap { background: #1a1a24; border-radius: 10px; padding: 16px; }
-    .BUY-row  { color: #22c55e; }
-    .SELL-row { color: #ef4444; }
-    .HOLD-row { color: #666; }
-  </style>
+.wlayout{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;margin-top:60px}
+.wp p{color:var(--text2);font-size:15px;line-height:1.9;margin-bottom:18px}
+.wp strong{color:var(--text);font-weight:600}
+.cstack{display:flex;flex-direction:column;gap:12px}
+.citem{display:flex;gap:16px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:border-color .2s,transform .2s}
+.citem:hover{border-color:var(--border2);transform:translateX(3px)}
+.cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.citem h4{font-size:14px;font-weight:600;margin-bottom:3px}
+.citem p{font-size:13px;color:var(--text2);line-height:1.6}
+
+.altbg{background:var(--bg2);transition:background .35s}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px}
+.mc{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;overflow:hidden;transition:border-color .25s,transform .25s}
+.mc:hover{border-color:var(--border2);transform:translateY(-4px)}
+.mc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.mc.cr::after{background:var(--accent)}
+.mc.st::after{background:#4d9ef7}
+.mc.fx::after{background:var(--gold)}
+.mf{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+.mc.cr .mf{color:var(--accent)}.mc.st .mf{color:#4d9ef7}.mc.fx .mf{color:var(--gold)}
+.mc h3{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:10px}
+.mc p{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:18px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;padding:3px 9px;border-radius:4px;background:var(--bg4);border:1px solid var(--border);color:var(--text3)}
+
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px}
+.bc{border-radius:14px;padding:32px 28px;border:1px solid var(--border)}
+.bb{background:rgba(0,212,170,.04);border-color:rgba(0,212,170,.15)}
+.bse{background:rgba(224,82,82,.04);border-color:rgba(224,82,82,.15)}
+.bh{background:rgba(201,168,76,.04);border-color:rgba(201,168,76,.15)}
+.bw{font-family:'Fraunces',serif;font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:14px}
+.bb .bw{color:var(--accent)}.bse .bw{color:var(--red)}.bh .bw{color:var(--gold)}
+.bc h3{font-size:16px;font-weight:600;margin-bottom:10px}
+.bc p{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:18px}
+.bl{list-style:none;display:flex;flex-direction:column;gap:6px}
+.bl li{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:8px;letter-spacing:.02em}
+.bl li::before{content:'›';font-size:14px;flex-shrink:0}
+.bb .bl li::before{color:var(--accent)}.bse .bl li::before{color:var(--red)}.bh .bl li::before{color:var(--gold)}
+
+.rlayout{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;margin-top:52px}
+.rrules{display:flex;flex-direction:column;gap:22px}
+.rrule{display:flex;gap:18px;align-items:flex-start}
+.rbadge{font-family:'DM Mono',monospace;font-size:10px;width:26px;height:26px;border-radius:6px;background:var(--accent-bg);border:1px solid var(--accent-bd);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.rrule h4{font-size:14px;font-weight:600;margin-bottom:5px}
+.rrule p{font-size:13px;color:var(--text2);line-height:1.7}
+.rpanel{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:28px}
+.rpt{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:24px}
+.rrows{display:flex;flex-direction:column;gap:18px}
+.rrow{display:flex;flex-direction:column;gap:7px}
+.rm{display:flex;justify-content:space-between}
+.rm span:first-child{font-size:12px;color:var(--text2)}
+.rm span:last-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--text)}
+.rtrack{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.rfill{height:100%;border-radius:3px}
+
+.cta{text-align:center;padding:112px 32px;border-top:1px solid var(--border);position:relative;overflow:hidden}
+.ctaorb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:300px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,212,170,.06) 0%,transparent 65%);pointer-events:none}
+.cta h2{font-family:'Fraunces',serif;font-size:clamp(36px,5vw,62px);font-weight:700;letter-spacing:-.025em;margin-bottom:16px;position:relative}
+.cta p{font-size:17px;color:var(--text2);margin-bottom:36px;position:relative}
+
+footer{border-top:1px solid var(--border);padding:24px 32px;display:flex;align-items:center;justify-content:space-between}
+.fb{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--text2)}
+.fn{font-family:'DM Mono',monospace;font-size:10px;color:var(--red);letter-spacing:.06em}
+.fc{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.06em}
+
+@keyframes fu{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+@media(max-width:860px){
+  nav{padding:0 20px}.nav-mid{display:none}
+  section{padding:64px 20px}.hero{padding:80px 20px 40px}
+  .hstats{flex-wrap:wrap;gap:20px}.stat{padding:0;margin:0;border:none}
+  .wlayout,.rlayout{grid-template-columns:1fr;gap:36px}
+  .mgrid,.bgrid{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:8px;text-align:center}
+}
+</style>
 </head>
 <body>
 
-<h1>BTC/USDT — Live Signal Bot</h1>
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nlm">Chart<span>IQ</span></span>
+    <span class="nls">Learn</span>
+  </a>
+  <div class="nav-mid">
+    <a href="index.html" class="nl act">Home</a>
+    <a href="indicators.html" class="nl">Indicators</a>
+  </div>
+  <div class="nav-r">
+    <div class="tt">
+      <button class="tb on" id="btnDark" onclick="setTheme('dark')" title="Dark">🌙</button>
+      <button class="tb" id="btnLight" onclick="setTheme('light')" title="Light">☀️</button>
+    </div>
+    <a href="indicators.html" class="nc">Start Learning →</a>
+  </div>
+</nav>
 
-<div class="stats">
-  <div class="card"><label>Price</label><div class="value" id="price">—</div></div>
-  <div class="card"><label>SMA 10</label><div class="value" id="sma10">—</div></div>
-  <div class="card"><label>SMA 50</label><div class="value" id="sma50">—</div></div>
-  <div class="card"><label>RSI 14</label><div class="value" id="rsi">—</div></div>
+<section class="hero">
+  <div class="hgrid"></div>
+  <div class="horb"></div>
+  <div class="hi">
+    <div class="hey">Free trading education</div>
+    <h1>Read the<br><span class="hl">charts.</span><br><span class="dim">Master the markets.</span></h1>
+    <p class="hsub">Learn how real traders analyse price movements using technical indicators — from the basics to advanced strategies — before risking a cent.</p>
+    <div class="hbtns">
+      <a href="indicators.html" class="bp">Explore Indicators →</a>
+      <a href="#trading" class="bs">What is trading?</a>
+    </div>
+    <div class="hstats">
+      <div class="stat"><div class="sv"><span class="ac">22</span></div><div class="sl">Indicators covered</div></div>
+      <div class="stat"><div class="sv">6</div><div class="sl">Major categories</div></div>
+      <div class="stat"><div class="sv">~45<span style="font-size:20px;color:var(--text2)">min</span></div><div class="sl">To complete</div></div>
+      <div class="stat"><div class="sv"><span class="ac">Free</span></div><div class="sl">Always</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="trading">
+  <div class="si">
+    <p class="slb reveal">Start here</p>
+    <h2 class="st reveal">What is trading?</h2>
+    <div class="wlayout">
+      <div class="wp reveal">
+        <p>Trading is the act of <strong>buying and selling financial assets</strong> — stocks, cryptocurrencies, forex pairs — with the goal of profiting from price movements.</p>
+        <p>Unlike long-term investing, trading focuses on <strong>shorter time horizons</strong>: from minutes to weeks. Traders use <strong>systematic tools called indicators</strong> to study past price behaviour and make higher-probability decisions.</p>
+        <p>The most important lesson: <strong>no indicator predicts the future</strong>. They all measure what has already happened. What they give you is an edge — a slightly better chance of being right — when used correctly and consistently.</p>
+        <p>This guide covers the full spectrum of technical analysis: from basic moving averages to advanced market structure concepts used by professional traders worldwide.</p>
+      </div>
+      <div class="cstack reveal">
+        <div class="citem"><div class="cdot" style="background:var(--accent)"></div><div><h4>Price action</h4><p>Every asset has a price driven by supply, demand, news and sentiment. Price always tells the truth.</p></div></div>
+        <div class="citem"><div class="cdot" style="background:#4d9ef7"></div><div><h4>Candlestick charts</h4><p>The standard way to visualise price. Each candle shows open, high, low and close for any time period.</p></div></div>
+        <div class="citem"><div class="cdot" style="background:var(--gold)"></div><div><h4>Volume</h4><p>How many units were traded. High volume validates a price move; low volume makes it suspicious.</p></div></div>
+        <div class="citem"><div class="cdot" style="background:#b06ef5"></div><div><h4>Technical indicators</h4><p>Mathematical formulas applied to price data that generate signals for entries, exits and trend direction.</p></div></div>
+        <div class="citem"><div class="cdot" style="background:var(--red)"></div><div><h4>Risk management</h4><p>Rules that protect your capital. More important than any indicator — it determines if you survive long enough to learn.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="altbg">
+  <div class="si">
+    <p class="slb reveal">Where you can trade</p>
+    <h2 class="st reveal">Three major markets</h2>
+    <p class="sb reveal">Each market has different hours, volatility, and accessibility. The indicators you'll learn work across all of them.</p>
+    <div class="mgrid">
+      <div class="mc cr reveal">
+        <p class="mf">Cryptocurrency</p>
+        <h3>Crypto</h3>
+        <p>Bitcoin, Ethereum and thousands of digital assets trade 24/7 globally. High volatility makes it ideal for learning technical analysis in real time.</p>
+        <div class="pills"><span class="pill">24/7 markets</span><span class="pill">High volatility</span><span class="pill">No broker needed</span><span class="pill">Best for beginners</span></div>
+      </div>
+      <div class="mc st reveal">
+        <p class="mf">Equities</p>
+        <h3>Stocks</h3>
+        <p>Shares of companies like Apple, Tesla and Amazon. More regulated, less volatile, and deeply tied to earnings and economic events.</p>
+        <div class="pills"><span class="pill">Mon–Fri 9:30–4pm</span><span class="pill">Medium volatility</span><span class="pill">Broker required</span><span class="pill">Well regulated</span></div>
+      </div>
+      <div class="mc fx reveal">
+        <p class="mf">Foreign Exchange</p>
+        <h3>Forex</h3>
+        <p>Trading currency pairs like EUR/USD. The world's largest market by volume. Open 24/5, requires understanding of macroeconomics.</p>
+        <div class="pills"><span class="pill">24/5 markets</span><span class="pill">Low volatility</span><span class="pill">Leverage common</span><span class="pill">Advanced level</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="si">
+    <p class="slb reveal">The core decision</p>
+    <h2 class="st reveal">Buy, Sell, or Hold?</h2>
+    <p class="sb reveal">Every moment in trading comes down to one of three decisions. Indicators replace emotion with data so you make them consistently.</p>
+    <div class="bgrid">
+      <div class="bc bb reveal">
+        <div class="bw">Buy</div>
+        <h3>Enter a long position</h3>
+        <p>You believe the price is going up. You purchase the asset to sell later at a higher price for a profit.</p>
+        <ul class="bl">
+          <li>Uptrend confirmed by indicators</li><li>Momentum is building</li>
+          <li>Not overbought (RSI &lt; 70)</li><li>Volume supports the move</li>
+        </ul>
+      </div>
+      <div class="bc bse reveal">
+        <div class="bw">Sell</div>
+        <h3>Exit or short position</h3>
+        <p>Close a winning trade to lock in profit, cut a losing trade to limit damage, or bet on price falling.</p>
+        <ul class="bl">
+          <li>Trend is reversing</li><li>Overbought signal (RSI &gt; 70)</li>
+          <li>Stop-loss level hit</li><li>Profit target reached</li>
+        </ul>
+      </div>
+      <div class="bc bh reveal">
+        <div class="bw">Hold</div>
+        <h3>Wait for clarity</h3>
+        <p>No clear signal means no trade. Doing nothing is often the best decision. Patience is a genuine trading edge.</p>
+        <ul class="bl">
+          <li>Conflicting indicator signals</li><li>Low volume / no momentum</li>
+          <li>Choppy sideways price action</li><li>Waiting for confirmation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="altbg">
+  <div class="si">
+    <p class="slb reveal">Before you trade a single dollar</p>
+    <h2 class="st reveal">Risk management</h2>
+    <p class="sb reveal">A great strategy with poor risk management loses money. A mediocre strategy with great risk management survives long enough to improve.</p>
+    <div class="rlayout">
+      <div class="rrules">
+        <div class="rrule reveal"><div class="rbadge">01</div><div><h4>The 1% rule</h4><p>Never risk more than 1–2% of your account per trade. With $1,000, that's $10–$20 max loss. You survive 50 consecutive losses.</p></div></div>
+        <div class="rrule reveal"><div class="rbadge">02</div><div><h4>Always use a stop-loss</h4><p>A pre-set exit price that limits your loss automatically. Set it before entering every trade — no exceptions, ever.</p></div></div>
+        <div class="rrule reveal"><div class="rbadge">03</div><div><h4>Risk/reward of at least 1:2</h4><p>Potential profit must be at least double potential loss. You can be wrong 50% of the time and still come out ahead.</p></div></div>
+        <div class="rrule reveal"><div class="rbadge">04</div><div><h4>Paper trade first</h4><p>Practice with fake money for at least 4 weeks before using real capital. Most exchanges offer free simulation modes.</p></div></div>
+      </div>
+      <div class="rpanel reveal">
+        <p class="rpt">// account survival (50% win rate)</p>
+        <div class="rrows">
+          <div class="rrow"><div class="rm"><span>Risk 1% per trade</span><span>Survives 50 losses ✓</span></div><div class="rtrack"><div class="rfill" style="width:93%;background:var(--accent)"></div></div></div>
+          <div class="rrow"><div class="rm"><span>Risk 5% per trade</span><span>Half gone in 14 losses</span></div><div class="rtrack"><div class="rfill" style="width:58%;background:#f59e0b"></div></div></div>
+          <div class="rrow"><div class="rm"><span>Risk 10% per trade</span><span>Wiped in 10 losses</span></div><div class="rtrack"><div class="rfill" style="width:30%;background:#f97316"></div></div></div>
+          <div class="rrow"><div class="rm"><span>Risk 25% per trade</span><span>Wiped in 4 losses ✗</span></div><div class="rtrack"><div class="rfill" style="width:7%;background:var(--red)"></div></div></div>
+        </div>
+        <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border)">
+          <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);line-height:1.9">// starting balance: $1,000<br>// win rate: 50%<br>// risk:reward ratio: 1:2</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta">
+  <div class="ctaorb"></div>
+  <p class="slb" style="display:inline-block;margin-bottom:16px">Next step</p>
+  <h2>Ready to study the indicators?</h2>
+  <p>Explore all 22 indicators across 6 categories — with explanations, signals, and real chart examples.</p>
+  <a href="indicators.html" class="bp" style="display:inline-flex">Go to Indicators →</a>
 </div>
 
-<div class="signal-box HOLD" id="signal">Loading...</div>
-
-<div class="chart-wrap">
-  <canvas id="priceChart" height="180"></canvas>
-</div>
-
-<div class="log-wrap">
-  <table>
-    <thead><tr><th>Time</th><th>Price</th><th>SMA 10</th><th>SMA 50</th><th>RSI</th><th>Signal</th></tr></thead>
-    <tbody id="log"></tbody>
-  </table>
-</div>
+<footer>
+  <span class="fb">ChartIQ Learn</span>
+  <span class="fn">⚠ Educational only — not financial advice</span>
+  <span class="fc">© 2025 chartiqlearn.com</span>
+</footer>
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────────
-const SYMBOL    = "BTCUSDT";
-const INTERVAL  = "1h";      // candle size: 1m, 5m, 15m, 1h, 4h, 1d
-const CANDLES   = 100;       // how many candles to fetch
-const SMA_FAST  = 10;
-const SMA_SLOW  = 50;
-const RSI_LEN   = 14;
-const REFRESH   = 60000;     // poll every 60 seconds
-
-// ── INDICATORS ───────────────────────────────────────────────
-function sma(data, period) {
-  // Simple moving average: average of last `period` values
-  if (data.length < period) return null;
-  const slice = data.slice(-period);
-  return slice.reduce((a, b) => a + b, 0) / period;
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('btnDark').classList.toggle('on',t==='dark');
+  document.getElementById('btnLight').classList.toggle('on',t==='light');
+  localStorage.setItem('ciq-theme',t);
 }
-
-function rsi(closes, period = 14) {
-  // RSI measures recent gains vs losses (0-100 scale)
-  // Above 70 = overbought, below 30 = oversold
-  if (closes.length < period + 1) return null;
-  const recent = closes.slice(-(period + 1));
-  let gains = 0, losses = 0;
-  for (let i = 1; i < recent.length; i++) {
-    const diff = recent[i] - recent[i - 1];
-    if (diff > 0) gains  += diff;
-    else          losses -= diff;   // losses are positive here
-  }
-  const avgGain = gains  / period;
-  const avgLoss = losses / period;
-  if (avgLoss === 0) return 100;
-  const rs = avgGain / avgLoss;
-  return 100 - (100 / (1 + rs));
-}
-
-function signal(closes) {
-  const fast = sma(closes, SMA_FAST);
-  const slow = sma(closes, SMA_SLOW);
-  const rsiVal = rsi(closes);
-  if (!fast || !slow || !rsiVal) return { signal: "HOLD", fast, slow, rsiVal };
-
-  // Look at previous candle too (detect the crossover moment)
-  const prevFast = sma(closes.slice(0, -1), SMA_FAST);
-  const prevSlow = sma(closes.slice(0, -1), SMA_SLOW);
-
-  const bullishCross = prevFast < prevSlow && fast > slow;
-  const bearishCross = prevFast > prevSlow && fast < slow;
-
-  let sig = "HOLD";
-  if (bullishCross && rsiVal < 65) sig = "BUY";
-  else if (bearishCross || rsiVal > 70) sig = "SELL";
-
-  return { signal: sig, fast, slow, rsiVal };
-}
-
-// ── CHART SETUP ───────────────────────────────────────────────
-const ctx = document.getElementById("priceChart").getContext("2d");
-const chart = new Chart(ctx, {
-  type: "line",
-  data: {
-    labels: [],
-    datasets: [
-      { label: "Price",  data: [], borderColor: "#6366f1", borderWidth: 1.5,
-        pointRadius: 0, tension: 0.3 },
-      { label: "SMA 10", data: [], borderColor: "#22c55e", borderWidth: 1.5,
-        pointRadius: 0, tension: 0.3, borderDash: [] },
-      { label: "SMA 50", data: [], borderColor: "#f59e0b", borderWidth: 1.5,
-        pointRadius: 0, tension: 0.3 },
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: "#888", boxWidth: 12 } } },
-    scales: {
-      x: { ticks: { color: "#555", maxTicksLimit: 8 }, grid: { color: "#222" } },
-      y: { ticks: { color: "#555" }, grid: { color: "#222" } }
-    }
-  }
-});
-
-// ── FETCH + UPDATE ────────────────────────────────────────────
-async function update() {
-  try {
-    const url = `https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=${CANDLES}`;
-    const res  = await fetch(url);
-    const data = await res.json();
-
-    // Each kline: [openTime, open, high, low, close, volume, ...]
-    const closes = data.map(c => parseFloat(c[4]));
-    const times  = data.map(c => {
-      const d = new Date(c[0]);
-      return `${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
-    });
-
-    // Build SMA arrays for the chart (one value per candle)
-    const smaFastArr = closes.map((_, i) =>
-      i >= SMA_FAST - 1 ? sma(closes.slice(0, i + 1), SMA_FAST) : null);
-    const smaSlowArr = closes.map((_, i) =>
-      i >= SMA_SLOW - 1 ? sma(closes.slice(0, i + 1), SMA_SLOW) : null);
-
-    // Calculate current signal
-    const { signal: sig, fast, slow, rsiVal } = signal(closes);
-    const price = closes[closes.length - 1];
-
-    // Update stat cards
-    document.getElementById("price").textContent = "$" + price.toLocaleString("en", {maximumFractionDigits: 0});
-    document.getElementById("sma10").textContent = fast  ? "$" + Math.round(fast)  : "—";
-    document.getElementById("sma50").textContent = slow  ? "$" + Math.round(slow)  : "—";
-    document.getElementById("rsi").textContent   = rsiVal ? rsiVal.toFixed(1)       : "—";
-
-    // Update signal box
-    const box = document.getElementById("signal");
-    box.textContent = sig;
-    box.className = `signal-box ${sig}`;
-
-    // Update chart
-    chart.data.labels          = times;
-    chart.data.datasets[0].data = closes;
-    chart.data.datasets[1].data = smaFastArr;
-    chart.data.datasets[2].data = smaSlowArr;
-    chart.update("none");   // "none" = no animation on refresh
-
-    // Log to table (only log when signal is BUY or SELL)
-    if (sig !== "HOLD") {
-      const row = document.createElement("tr");
-      row.className = sig + "-row";
-      const now = new Date().toLocaleTimeString();
-      row.innerHTML = `
-        <td>${now}</td>
-        <td>$${Math.round(price).toLocaleString()}</td>
-        <td>$${Math.round(fast)}</td>
-        <td>$${Math.round(slow)}</td>
-        <td>${rsiVal.toFixed(1)}</td>
-        <td><strong>${sig}</strong></td>`;
-      document.getElementById("log").prepend(row);
-    }
-
-  } catch (err) {
-    console.error("API error:", err);
-  }
-}
-
-// Run immediately then every REFRESH milliseconds
-update();
-setInterval(update, REFRESH);
+(function(){const s=localStorage.getItem('ciq-theme');if(s)setTheme(s);})();
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*70);obs.unobserve(e.target);}});
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
