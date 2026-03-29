@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trading Bot</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #0f0f13; color: #e0e0e0; padding: 20px; }
+    h1 { font-size: 20px; margin-bottom: 16px; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .card  { background: #1a1a24; border-radius: 10px; padding: 14px 18px; }
+    .card label { font-size: 12px; color: #888; }
+    .card .value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+
+    .signal-box { border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;
+                  font-size: 24px; font-weight: 700; text-align: center; }
+    .BUY  { background: #0d2e1a; color: #22c55e; border: 1px solid #166534; }
+    .SELL { background: #2e0d0d; color: #ef4444; border: 1px solid #7f1d1d; }
+    .HOLD { background: #1a1a24; color: #888;    border: 1px solid #333; }
+
+    canvas { width: 100% !important; }
+    .chart-wrap { background: #1a1a24; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th    { text-align: left; padding: 8px 12px; color: #666; font-weight: 500;
+            border-bottom: 1px solid #222; }
+    td    { padding: 8px 12px; border-bottom: 1px solid #1a1a24; }
+    .log-wrap { background: #1a1a24; border-radius: 10px; padding: 16px; }
+    .BUY-row  { color: #22c55e; }
+    .SELL-row { color: #ef4444; }
+    .HOLD-row { color: #666; }
+  </style>
+</head>
+<body>
+
+<h1>BTC/USDT — Live Signal Bot</h1>
+
+<div class="stats">
+  <div class="card"><label>Price</label><div class="value" id="price">—</div></div>
+  <div class="card"><label>SMA 10</label><div class="value" id="sma10">—</div></div>
+  <div class="card"><label>SMA 50</label><div class="value" id="sma50">—</div></div>
+  <div class="card"><label>RSI 14</label><div class="value" id="rsi">—</div></div>
+</div>
+
+<div class="signal-box HOLD" id="signal">Loading...</div>
+
+<div class="chart-wrap">
+  <canvas id="priceChart" height="180"></canvas>
+</div>
+
+<div class="log-wrap">
+  <table>
+    <thead><tr><th>Time</th><th>Price</th><th>SMA 10</th><th>SMA 50</th><th>RSI</th><th>Signal</th></tr></thead>
+    <tbody id="log"></tbody>
+  </table>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+const SYMBOL    = "BTCUSDT";
+const INTERVAL  = "1h";      // candle size: 1m, 5m, 15m, 1h, 4h, 1d
+const CANDLES   = 100;       // how many candles to fetch
+const SMA_FAST  = 10;
+const SMA_SLOW  = 50;
+const RSI_LEN   = 14;
+const REFRESH   = 60000;     // poll every 60 seconds
+
+// ── INDICATORS ───────────────────────────────────────────────
+function sma(data, period) {
+  // Simple moving average: average of last `period` values
+  if (data.length < period) return null;
+  const slice = data.slice(-period);
+  return slice.reduce((a, b) => a + b, 0) / period;
+}
+
+function rsi(closes, period = 14) {
+  // RSI measures recent gains vs losses (0-100 scale)
+  // Above 70 = overbought, below 30 = oversold
+  if (closes.length < period + 1) return null;
+  const recent = closes.slice(-(period + 1));
+  let gains = 0, losses = 0;
+  for (let i = 1; i < recent.length; i++) {
+    const diff = recent[i] - recent[i - 1];
+    if (diff > 0) gains  += diff;
+    else          losses -= diff;   // losses are positive here
+  }
+  const avgGain = gains  / period;
+  const avgLoss = losses / period;
+  if (avgLoss === 0) return 100;
+  const rs = avgGain / avgLoss;
+  return 100 - (100 / (1 + rs));
+}
+
+function signal(closes) {
+  const fast = sma(closes, SMA_FAST);
+  const slow = sma(closes, SMA_SLOW);
+  const rsiVal = rsi(closes);
+  if (!fast || !slow || !rsiVal) return { signal: "HOLD", fast, slow, rsiVal };
+
+  // Look at previous candle too (detect the crossover moment)
+  const prevFast = sma(closes.slice(0, -1), SMA_FAST);
+  const prevSlow = sma(closes.slice(0, -1), SMA_SLOW);
+
+  const bullishCross = prevFast < prevSlow && fast > slow;
+  const bearishCross = prevFast > prevSlow && fast < slow;
+
+  let sig = "HOLD";
+  if (bullishCross && rsiVal < 65) sig = "BUY";
+  else if (bearishCross || rsiVal > 70) sig = "SELL";
+
+  return { signal: sig, fast, slow, rsiVal };
+}
+
+// ── CHART SETUP ───────────────────────────────────────────────
+const ctx = document.getElementById("priceChart").getContext("2d");
+const chart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [
+      { label: "Price",  data: [], borderColor: "#6366f1", borderWidth: 1.5,
+        pointRadius: 0, tension: 0.3 },
+      { label: "SMA 10", data: [], borderColor: "#22c55e", borderWidth: 1.5,
+        pointRadius: 0, tension: 0.3, borderDash: [] },
+      { label: "SMA 50", data: [], borderColor: "#f59e0b", borderWidth: 1.5,
+        pointRadius: 0, tension: 0.3 },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: "#888", boxWidth: 12 } } },
+    scales: {
+      x: { ticks: { color: "#555", maxTicksLimit: 8 }, grid: { color: "#222" } },
+      y: { ticks: { color: "#555" }, grid: { color: "#222" } }
+    }
+  }
+});
+
+// ── FETCH + UPDATE ────────────────────────────────────────────
+async function update() {
+  try {
+    const url = `https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${INTERVAL}&limit=${CANDLES}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    // Each kline: [openTime, open, high, low, close, volume, ...]
+    const closes = data.map(c => parseFloat(c[4]));
+    const times  = data.map(c => {
+      const d = new Date(c[0]);
+      return `${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
+    });
+
+    // Build SMA arrays for the chart (one value per candle)
+    const smaFastArr = closes.map((_, i) =>
+      i >= SMA_FAST - 1 ? sma(closes.slice(0, i + 1), SMA_FAST) : null);
+    const smaSlowArr = closes.map((_, i) =>
+      i >= SMA_SLOW - 1 ? sma(closes.slice(0, i + 1), SMA_SLOW) : null);
+
+    // Calculate current signal
+    const { signal: sig, fast, slow, rsiVal } = signal(closes);
+    const price = closes[closes.length - 1];
+
+    // Update stat cards
+    document.getElementById("price").textContent = "$" + price.toLocaleString("en", {maximumFractionDigits: 0});
+    document.getElementById("sma10").textContent = fast  ? "$" + Math.round(fast)  : "—";
+    document.getElementById("sma50").textContent = slow  ? "$" + Math.round(slow)  : "—";
+    document.getElementById("rsi").textContent   = rsiVal ? rsiVal.toFixed(1)       : "—";
+
+    // Update signal box
+    const box = document.getElementById("signal");
+    box.textContent = sig;
+    box.className = `signal-box ${sig}`;
+
+    // Update chart
+    chart.data.labels          = times;
+    chart.data.datasets[0].data = closes;
+    chart.data.datasets[1].data = smaFastArr;
+    chart.data.datasets[2].data = smaSlowArr;
+    chart.update("none");   // "none" = no animation on refresh
+
+    // Log to table (only log when signal is BUY or SELL)
+    if (sig !== "HOLD") {
+      const row = document.createElement("tr");
+      row.className = sig + "-row";
+      const now = new Date().toLocaleTimeString();
+      row.innerHTML = `
+        <td>${now}</td>
+        <td>$${Math.round(price).toLocaleString()}</td>
+        <td>$${Math.round(fast)}</td>
+        <td>$${Math.round(slow)}</td>
+        <td>${rsiVal.toFixed(1)}</td>
+        <td><strong>${sig}</strong></td>`;
+      document.getElementById("log").prepend(row);
+    }
+
+  } catch (err) {
+    console.error("API error:", err);
+  }
+}
+
+// Run immediately then every REFRESH milliseconds
+update();
+setInterval(update, REFRESH);
+</script>
+</body>
+</html>
